@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-const rawProjectUrl = process.env.VITE_SUPABASE_URL?.replace(/\/$/, "");
+const rawProjectUrl = (import.meta.env.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL)?.replace(/\/$/, "");
 const projectUrl = rawProjectUrl?.startsWith("http") ? rawProjectUrl : rawProjectUrl ? `https://${rawProjectUrl}.supabase.co` : undefined;
-const anonKey = process.env.VITE_SUPABASE_ANON_KEY;
+const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 
 describe("Supabase frontend configuration", () => {
   it("can reach the Storage API with the browser-safe key", async () => {
