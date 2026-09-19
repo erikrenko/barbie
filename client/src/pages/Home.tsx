@@ -30,7 +30,8 @@ const ASSETS = {
   aerobics: "https://cwkwdstkqfsuawpdhuka.supabase.co/storage/v1/object/public/barb/barbie-aerobics.jpg",
 };
 
-const SUPABASE_PROJECT_URL = (import.meta.env.VITE_SUPABASE_URL || "https://cwkwdstkqfsuawpdhuka.supabase.co").replace(/\/$/, "");
+const SUPABASE_URL_VALUE = (import.meta.env.VITE_SUPABASE_URL || "https://cwkwdstkqfsuawpdhuka.supabase.co").replace(/\/$/, "");
+const SUPABASE_PROJECT_URL = SUPABASE_URL_VALUE.startsWith("http") ? SUPABASE_URL_VALUE : `https://${SUPABASE_URL_VALUE}.supabase.co`;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 
 type GalleryItem = { src: string; title: string; text: string; filename?: string };
