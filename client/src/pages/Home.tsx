@@ -33,6 +33,7 @@ const ASSETS = {
 const SUPABASE_URL_VALUE = (import.meta.env.VITE_SUPABASE_URL || "https://cwkwdstkqfsuawpdhuka.supabase.co").replace(/\/$/, "");
 const SUPABASE_PROJECT_URL = SUPABASE_URL_VALUE.startsWith("http") ? SUPABASE_URL_VALUE : `https://${SUPABASE_URL_VALUE}.supabase.co`;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+const supabasePhoto = (filename: string) => `${SUPABASE_PROJECT_URL}/storage/v1/object/public/barb/${encodeURIComponent(filename)}`;
 
 type GalleryItem = { src: string; title: string; text: string; filename?: string };
 
@@ -247,7 +248,7 @@ function LaunchPage({ go }: { go: (n: number) => void }) {
         <DidYouKnow>Leto 1959 je prvo leto Barbiejine zgodbe.</DidYouKnow>
         <div className="page-actions"><BackButton onClick={() => go(2)} /><NextButton onClick={() => go(4)} /></div>
       </div>
-      <div className="launch-art"><img src={ASSETS.hero} alt="Zgodovinska ilustracija modne lutke iz leta 1959" /><div className="launch-ribbon">PRVO<br />POGLAVJE</div></div>
+      <div className="launch-art"><img src={supabasePhoto("barbie-1959.jpg")} alt="Barbie iz leta 1959 v črno-belih kopalkah" /><div className="launch-ribbon">PRVO<br />POGLAVJE</div></div>
     </div>
   );
 }
@@ -256,7 +257,7 @@ function FirstBarbiePage({ go }: { go: (n: number) => void }) {
   return (
     <div className="page-grid story-page first-page">
       <div className="first-art">
-        <div className="portrait-frame"><div className="generic-doll"><div className="doll-hair" /><div className="doll-face" /><div className="doll-neck" /><div className="doll-suit" /><div className="doll-shoe left" /><div className="doll-shoe right" /></div><div className="frame-label">ORIGINALNI VIDEZ · 1959</div></div>
+        <div className="portrait-frame"><img className="first-barbie-photo" src={supabasePhoto("barbie-1959-original.jpg")} alt="Originalna Barbie iz leta 1959" /><div className="frame-label">ORIGINALNI VIDEZ · 1959</div></div>
         <div className="accessory-card"><span className="accessory-sun">◌</span><span className="accessory-shoe">⌁</span><span className="accessory-bag">▱</span><div>SONČNA OČALA · ČEVLJI · TORBICA</div></div>
       </div>
       <div className="story-copy first-copy">
@@ -288,6 +289,7 @@ function CareersPage({ go }: { go: (n: number) => void }) {
         <h2>LAHKO SANJAŠ<br /><em>O VELIKIH STVAREH</em></h2>
         <p>Barbie je imela veliko različnih poklicev. Skozi igro lahko raziskuješ, kaj te zanima.</p>
         <div className="quote-card">»DANES SI LAHKO ZDRAVNICA. JUTRI PA RAZISKOVALKA VESOLJA.«</div>
+        <div className="story-photo-strip"><img src={supabasePhoto("barbie-astronaut.jpg")} alt="Barbie kot astronavtka, kirurginja in rock zvezda" /><span>BARBIE JE IMELA VELIKO POKLICEV.</span></div>
         <div className="page-actions"><BackButton onClick={() => go(4)} /><NextButton onClick={() => go(6)} /></div>
       </div>
       <div className="career-grid">
@@ -302,7 +304,7 @@ function DecadesPage({ go }: { go: (n: number) => void }) {
   return (
     <div className="page-grid timeline-page">
       <div className="timeline-heading"><SectionTag tone="yellow">07 · DESETLETJA</SectionTag><h2>BARBIE<br /><em>SKOZI ČAS</em></h2><p>Spreminjali so se lasje, oblačila, domovi in poklici. Najpomembnejša stvar pa je ostala enaka: domišljija.</p></div>
-      <div className="timeline-visual"><img src={ASSETS.decades} alt="Ilustrirani časovni trak Barbie skozi desetletja" /><div className="timeline-years">{decades.map((d, i) => <span key={d} className={i === 0 ? "active" : ""}>{d}</span>)}</div></div>
+      <div className="timeline-visual"><img src={supabasePhoto("barbie-1960s.jpg")} alt="Barbiejini poklici iz šestdesetih let" /><div className="timeline-years">{decades.map((d, i) => <span key={d} className={i === 0 ? "active" : ""}>{d}</span>)}</div></div>
       <div className="timeline-bottom"><div className="mini-timeline-fact"><Clock3 size={20} /><span><strong>ALI VEŠ?</strong> Ko pogledamo stare igrače, lahko opazimo, kako se je spreminjal tudi svet.</span></div><div className="page-actions"><BackButton onClick={() => go(5)} /><NextButton onClick={() => go(7)} /></div></div>
     </div>
   );
