@@ -27,6 +27,7 @@ const ASSETS = {
   hero: "/manus-storage/barbie-hero_7ebe8515.png",
   ruth: "/manus-storage/ruth-handler-illustration_b3dff029.png",
   decades: "/manus-storage/barbie-decades_10d4eb95.png",
+  aerobics: "https://cwkwdstkqfsuawpdhuka.supabase.co/storage/v1/object/public/barb/barbie-aerobics.jpg",
 };
 
 const pages = [
@@ -44,7 +45,7 @@ const pages = [
 const gallery = [
   { src: ASSETS.hero, title: "Barbie leta 1959", text: "Ena prvih Barbie in začetek velike zgodbe." },
   { src: ASSETS.ruth, title: "Ideje za novo igračo", text: "Ustvarjanje se pogosto začne z risbo, vprašanjem in radovednostjo." },
-  { src: ASSETS.decades, title: "Barbie skozi čas", text: "Oblačila, poklici in barve se skozi leta spreminjajo." },
+  { src: ASSETS.aerobics, title: "Barbie pri aerobiki", text: "Aerobika je bila priljubljena telovadba v osemdesetih letih." },
 ];
 
 const quizQuestions = [
