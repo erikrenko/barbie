@@ -64,6 +64,20 @@ Prva različica Supabase še ne potrebuje, ker je vsebina statična in je napred
 
 Ko bo Supabase dodan, naj bodo javne vrednosti v Vercelu nastavljene kot `VITE_SUPABASE_URL` in `VITE_SUPABASE_ANON_KEY`. Skrivnih servisnih ključev ne smemo pošiljati v brskalnik.
 
+### Samodejno branje galerije
+
+Galerija zdaj poskuša prebrati datoteke iz javnega bucketa `barb`. Javni ogled posamezne datoteke in dovoljenje za izpis seznama datotek sta v Supabase Storage ločeni pravici. Če galerija še vedno pokaže prototipne slike, v Supabase SQL Editorju enkrat izvedite spodnji ukaz:
+
+```sql
+create policy "Allow public gallery listing"
+on storage.objects
+for select
+to anon
+using (bucket_id = 'barb');
+```
+
+Bucket `barb` mora ostati nastavljen kot **Public**. Spletna stran uporablja samo `anon` ključ; servisnega ključa `service_role` nikoli ne vstavimo v frontend.
+
 ## Vsebina in pravice
 
 Besedilo je na novo napisano v slovenščini za izobraževalni prototip. Knjiga Robin Gerber, *Barbie: Her Inspiration, History, and Legacy*, je uporabljena kot raziskovalni vir. Za javno objavo je treba pri vsaki uporabljeni fotografiji preveriti dovoljenje ali licenco.

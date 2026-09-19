@@ -30,6 +30,48 @@ const ASSETS = {
   aerobics: "https://cwkwdstkqfsuawpdhuka.supabase.co/storage/v1/object/public/barb/barbie-aerobics.jpg",
 };
 
+const SUPABASE_PROJECT_URL = (import.meta.env.VITE_SUPABASE_URL || "https://cwkwdstkqfsuawpdhuka.supabase.co").replace(/\/$/, "");
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+
+type GalleryItem = { src: string; title: string; text: string; filename?: string };
+
+const photoDescriptions: Record<string, string> = {
+  "barbie-aerobics.jpg": "Aerobics Instructor Barbie je v osemdesetih letih pokazala, da je lahko telovadba tudi zabavna.",
+  "barbie-1959.jpg": "Mattelova prva Barbie iz leta 1959 v značilnih črno-belih kopalkah.",
+  "barbie-1960.jpg": "Wedding Day Barbie iz leta 1960 je nosila poročno obleko in tančico.",
+  "barbie-1959-piknik.jpg": "Zbirka oblačil in dodatkov za piknik, kuhanje in izlet iz leta 1959.",
+  "barbie-1959-shopper.jpg": "Tri modne podobe Barbie iz leta 1959 za nakupovanje, potovanje in vsakdan.",
+  "barbie-1959-original.jpg": "Prva Barbie s črno-belimi zebrastimi kopalkami in črnimi čevlji.",
+  "barbie-astronaut.jpg": "Barbie kot astronavtka, kirurginja in rock zvezda raziskuje različne poklice.",
+  "barbie-medicinska-sestra.jpg": "Barbie kot vojaška zdravnica, predsednica in arhitektka.",
+  "barbie-gabby.jpg": "Lutka Gabby Douglas iz leta 2018 slavi izjemno telovadko in vzornico.",
+  "barbie-amelia.jpg": "Amelia Earhart, Frida Kahlo in Katherine Johnson v zbirki navdihujočih žensk.",
+  "barbie-look.jpg": "Različne modne in poklicne podobe Barbie, ki spodbujajo velike sanje.",
+  "barbie-1960s.jpg": "Zbirka poklicnih Barbie iz šestdesetih let: poslovna ženska, medicinska sestra, stevardesa in karieristka.",
+  "barbie-sketches.jpg": "Skice oblačil, ki so navdihnile modne podobe Barbie v šestdesetih letih.",
+  "barbie-dolls-of-the-world.jpg": "Barbie iz zbirke Dolls of the World predstavlja različne ljudi in kulture.",
+  "barbie-vozicek.jpg": "Share-a-Smile Becky iz leta 1997 je bila Barbiejina prijateljica na invalidskem vozičku.",
+  "barbie-pilotka.jpg": "Barbie kot pilotka ob 60. obletnici leta 2019.",
+  "barbie-razlicne.jpg": "Leta 2016 je Barbie dobila različne oblike telesa, višine in postave.",
+  "barbie-amputee.jpg": "Barbie z amputacijo pomaga otrokom prepoznati različne življenjske izkušnje.",
+  "barbie-first-dreamhouse.jpg": "Barbiejina prva hiša iz leta 1962 je predstavljala samostojnost in domišljijo.",
+  "barbie-first-car.jpg": "Leta 1962 se je Barbie prvič odpeljala na pot v športnem avtomobilu.",
+  "barbie-first-camper.jpg": "Leta 1971 je Barbie dobila avtodom za pustolovščine v naravi.",
+  "barbie-first-surgeon.jpg": "Surgeon Barbie iz leta 1973 je otrokom pokazala, da lahko zdravijo in rešujejo življenja.",
+  "barbie-police.jpg": "Leta 1993 je Barbie kot policistka pokazala, da lahko dekleta sodelujejo pri skrbi za skupnost.",
+  "barbie-winter.jpg": "Winter Sports Barbie je otroke spodbujala k raziskovanju zimskih športov.",
+  "barbie-firefighter.jpg": "Firefighter Barbie je leta 1995 pokazala, da so lahko junakinje tudi gasilke.",
+  "barbie-sign.jpg": "Sign Language Teacher Barbie je otroke spodbujala k učenju znakovnega jezika.",
+  "barbie-zoo.jpg": "Zoologist Barbie je raziskovala delo z živalmi in skrb za naravo.",
+  "barbie-computer.jpg": "Computer Engineer Barbie je leta 2010 predstavljala poklic v računalništvu.",
+  "barbie-news.jpg": "Barbie kot novinarka je pokazala, da imajo ženske prostor tudi v medijih.",
+  "barbie-chef.jpg": "Barbie kot glavna kuharica in slaščičarka je navdihovala mlade ljubiteljice hrane.",
+  "barbie-builder.jpg": "Builder Barbie je dekleta povabila v svet gradnje, orodja in velikih načrtov.",
+  "barbie-ken.jpg": "Originalna Barbie in Ken v kopalkah iz leta 1959.",
+  "barbie-dreamhouse.jpg": "Barbie v dnevni sobi prve Dreamhouse iz leta 1961.",
+  "barbie-sew.jpg": "Sew-Free Fashion-Fun iz leta 1963 je otrokom omogočil ustvarjanje oblačil brez šivanja.",
+};
+
 const pages = [
   { number: "01", label: "UVOD", title: "DOBRODOŠLA V BARBIJINI ZGODBI", kicker: "POTOVANJE SKOZI ČAS" },
   { number: "02", label: "USTVARJALKA", title: "KDO JE BILA RUTH HANDLER?", kicker: "IDEJA SE ZAČNE Z OPAZOVANJEM" },
@@ -42,11 +84,28 @@ const pages = [
   { number: "09", label: "KVIZ", title: "KVIZ IN USTVARJALNA NALOGA", kicker: "TVOJA DOMIŠLJIJA JE TVOJA SUPERMOČ" },
 ];
 
-const gallery = [
+const fallbackGallery: GalleryItem[] = [
   { src: ASSETS.hero, title: "Barbie leta 1959", text: "Ena prvih Barbie in začetek velike zgodbe." },
   { src: ASSETS.ruth, title: "Ideje za novo igračo", text: "Ustvarjanje se pogosto začne z risbo, vprašanjem in radovednostjo." },
   { src: ASSETS.aerobics, title: "Barbie pri aerobiki", text: "Aerobika je bila priljubljena telovadba v osemdesetih letih." },
 ];
+
+async function loadSupabaseGallery(): Promise<GalleryItem[]> {
+  if (!SUPABASE_ANON_KEY) return fallbackGallery;
+  const response = await fetch(`${SUPABASE_PROJECT_URL}/storage/v1/object/list/barb`, {
+    method: "POST",
+    headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ prefix: "", limit: 100, offset: 0, sortBy: { column: "name", order: "asc" } }),
+  });
+  if (!response.ok) throw new Error(`Supabase Storage list failed: ${response.status}`);
+  const files = await response.json() as Array<{ name?: string; id?: string }>;
+  const items = files.filter((file) => file.name && /\.(jpg|jpeg|png|webp)$/i.test(file.name)).map((file) => {
+    const filename = file.name as string;
+    const label = filename.replace(/\.[^.]+$/, "").replace(/-/g, " ");
+    return { filename, src: `${SUPABASE_PROJECT_URL}/storage/v1/object/public/barb/${encodeURIComponent(filename)}`, title: label.toUpperCase(), text: photoDescriptions[filename] || "Fotografija iz Barbijine zgodbe." };
+  });
+  return items.length ? items : fallbackGallery;
+}
 
 const quizQuestions = [
   {
@@ -248,12 +307,12 @@ function DecadesPage({ go }: { go: (n: number) => void }) {
   );
 }
 
-function GalleryPage({ go, openImage }: { go: (n: number) => void; openImage: (i: number) => void }) {
+function GalleryPage({ go, openImage, items, loading }: { go: (n: number) => void; openImage: (i: number) => void; items: GalleryItem[]; loading: boolean }) {
   return (
     <div className="page-grid gallery-page">
       <div className="gallery-heading"><SectionTag tone="teal">08 · GALERIJA</SectionTag><h2>POGLEJ.<br /><em>POVEČAJ. RAZIŠČI.</em></h2><p>Tapni na sliko, da jo povečaš. Nato preberi kratek napis.</p></div>
-      <div className="gallery-grid">{gallery.map((item, i) => <button className="gallery-card" key={item.title} type="button" onClick={() => openImage(i)}><img src={item.src} alt={item.title} /><span className="gallery-expand"><Expand size={17} /></span><div className="gallery-meta"><strong>{item.title}</strong><span>{item.text}</span></div></button>)}</div>
-      <div className="gallery-footer"><div className="mini-note"><ImageIcon size={16} /> Vsaka slika potrebuje urejen vir ali dovoljenje.</div><div className="page-actions"><BackButton onClick={() => go(6)} /><NextButton onClick={() => go(8)} /></div></div>
+      <div className="gallery-grid">{items.map((item, i) => <button className="gallery-card" key={item.filename || item.title} type="button" onClick={() => openImage(i)}><img src={item.src} alt={item.title} /><span className="gallery-expand"><Expand size={17} /></span><div className="gallery-meta"><strong>{item.title}</strong><span>{item.text}</span></div></button>)}</div>
+      <div className="gallery-footer"><div className="mini-note"><ImageIcon size={16} /> {loading ? "NALAGAM SLIKE IZ SUPABASE ..." : "Vsaka slika potrebuje urejen vir ali dovoljenje."}</div><div className="page-actions"><BackButton onClick={() => go(6)} /><NextButton onClick={() => go(8)} /></div></div>
     </div>
   );
 }
@@ -286,8 +345,15 @@ export default function Home() {
   const [page, setPage] = useState(0);
   const [caps, setCaps] = useState(() => localStorage.getItem("barbie-caps") === "true");
   const [galleryIndex, setGalleryIndex] = useState<number | null>(null);
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>(fallbackGallery);
+  const [galleryLoading, setGalleryLoading] = useState(true);
   useEffect(() => { localStorage.setItem("barbie-caps", String(caps)); }, [caps]);
   useEffect(() => { window.scrollTo({ top: 0, behavior: "smooth" }); }, [page]);
+  useEffect(() => {
+    let active = true;
+    loadSupabaseGallery().then((items) => { if (active) setGalleryItems(items); }).catch(() => undefined).finally(() => { if (active) setGalleryLoading(false); });
+    return () => { active = false; };
+  }, []);
 
   const go = (nextPage: number) => setPage(Math.max(0, Math.min(pages.length - 1, nextPage)));
   const current = pages[page];
@@ -299,9 +365,9 @@ export default function Home() {
     if (page === 4) return <FirstBarbiePage go={go} />;
     if (page === 5) return <CareersPage go={go} />;
     if (page === 6) return <DecadesPage go={go} />;
-    if (page === 7) return <GalleryPage go={go} openImage={setGalleryIndex} />;
+    if (page === 7) return <GalleryPage go={go} openImage={setGalleryIndex} items={galleryItems} loading={galleryLoading} />;
     return <QuizPage go={go} />;
-  }, [page]);
+  }, [page, galleryItems, galleryLoading]);
 
   return (
     <div className={`app-shell ${caps ? "caps-mode" : ""}`}>
@@ -312,7 +378,7 @@ export default function Home() {
       </header>
       <main className="site-main"><div className="page-kicker"><span>{current.label}</span><span className="kicker-line" /><span>{current.kicker}</span></div>{pageContent}</main>
       <footer className="site-footer"><div className="footer-progress">{pages.map((item, i) => <button key={item.number} type="button" className={`progress-dot ${i === page ? "active" : ""} ${i < page ? "visited" : ""}`} onClick={() => go(i)} aria-label={`Pojdi na stran ${i + 1}`}><span>{item.number}</span></button>)}</div><div className="footer-credit">BARBIJINA ZGODBA <span>·</span> SLOVENIJA <span>·</span> 2026</div></footer>
-      {galleryIndex !== null && <div className="lightbox" role="dialog" aria-modal="true"><button className="lightbox-close" type="button" onClick={() => setGalleryIndex(null)} aria-label="Zapri"><X size={24} /></button><button className="lightbox-arrow left" type="button" onClick={() => setGalleryIndex((galleryIndex + gallery.length - 1) % gallery.length)} aria-label="Prejšnja slika"><ChevronLeft size={28} /></button><div className="lightbox-content"><img src={gallery[galleryIndex].src} alt={gallery[galleryIndex].title} /><div><span>{gallery[galleryIndex].title}</span><p>{gallery[galleryIndex].text}</p></div></div><button className="lightbox-arrow right" type="button" onClick={() => setGalleryIndex((galleryIndex + 1) % gallery.length)} aria-label="Naslednja slika"><ChevronRight size={28} /></button></div>}
+      {galleryIndex !== null && galleryItems[galleryIndex] && <div className="lightbox" role="dialog" aria-modal="true"><button className="lightbox-close" type="button" onClick={() => setGalleryIndex(null)} aria-label="Zapri"><X size={24} /></button><button className="lightbox-arrow left" type="button" onClick={() => setGalleryIndex((galleryIndex + galleryItems.length - 1) % galleryItems.length)} aria-label="Prejšnja slika"><ChevronLeft size={28} /></button><div className="lightbox-content"><img src={galleryItems[galleryIndex].src} alt={galleryItems[galleryIndex].title} /><div><span>{galleryItems[galleryIndex].title}</span><p>{galleryItems[galleryIndex].text}</p></div></div><button className="lightbox-arrow right" type="button" onClick={() => setGalleryIndex((galleryIndex + 1) % galleryItems.length)} aria-label="Naslednja slika"><ChevronRight size={28} /></button></div>}
     </div>
   );
 }
