@@ -192,7 +192,7 @@ function RuthPage({ go }: { go: (n: number) => void }) {
   return (
     <div className="page-grid story-page split-page">
       <div className="story-art-card art-card-coral">
-        <img src={ASSETS.ruth} alt="Ilustracija ustvarjalke pri delu" />
+        <img className="ruth-photo" src={supabasePhoto("ruth-handler-portret.jpg")} alt="Portret Ruth Handler" />
         <div className="image-caption"><span>USTVARJALKA</span><strong>RUTH HANDLER</strong></div>
         <div className="stamp">IDEJA<br />+<br />POGUM</div>
       </div>
@@ -248,7 +248,7 @@ function LaunchPage({ go }: { go: (n: number) => void }) {
         <DidYouKnow>Leto 1959 je prvo leto Barbiejine zgodbe.</DidYouKnow>
         <div className="page-actions"><BackButton onClick={() => go(2)} /><NextButton onClick={() => go(4)} /></div>
       </div>
-      <div className="launch-art"><img src={supabasePhoto("barbie-1959.jpg")} alt="Barbie iz leta 1959 v črno-belih kopalkah" /><div className="launch-ribbon">PRVO<br />POGLAVJE</div></div>
+      <div className="launch-art portrait-layout"><img src={supabasePhoto("barbie-1959.jpg")} alt="Barbie iz leta 1959 v črno-belih kopalkah" /><div className="launch-ribbon">PRVO<br />POGLAVJE</div></div>
     </div>
   );
 }
