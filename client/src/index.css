@@ -193,3 +193,7 @@ strong { color: var(--pink-deep); }
   .launch-art.portrait-layout img { height: 430px; }
   .first-barbie-photo { height: 300px; }
 }
+
+/* Final content illustration: source photo used as a sketchbook reference, not a stretched hero. */
+.idea-photo { position: absolute; right: 10%; bottom: 12%; width: 31%; aspect-ratio: 1400 / 905; object-fit: contain; background: #fffdf6; padding: 6px; transform: rotate(-4deg); box-shadow: 0 8px 13px rgba(73,43,41,.14); }
+@media (max-width: 700px) { .idea-photo { width: 34%; right: 8%; bottom: 13%; } }

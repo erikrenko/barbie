@@ -167,7 +167,7 @@ function HomePage({ go }: { go: (n: number) => void }) {
       <div className="hero-copy">
         <SectionTag tone="teal">PRVI DEL · 9 POSTAJ</SectionTag>
         <h1>BARBIJINA<br /><em>ZGODBA</em></h1>
-        <p className="hero-lede">Majhna lutka. Velika domišljija. Potuj skozi leta in odkrij, kako se je začela zgodba Barbie.</p>
+        <p className="hero-lede">Majhna lutka. Velika domišljija. Potuj skozi leta in odkrij, kako so iz ene zamisli nastale številne zgodbe, poklici in pustolovščine.</p>
         <div className="hero-actions">
           <NextButton onClick={() => go(1)}>ZAČNI ZGODBO</NextButton>
           <button className="text-button" type="button" onClick={() => go(7)}><ImageIcon size={18} /> ODPRETI GALERIJO</button>
@@ -200,9 +200,9 @@ function RuthPage({ go }: { go: (n: number) => void }) {
         <SectionTag tone="pink">02 · USTVARJALKA</SectionTag>
         <h2>KDO JE BILA<br /><em>RUTH HANDLER?</em></h2>
         <p>Ruth Handler je bila ena od ustvarjalk Barbie. Skupaj z možem Elliotom in prijateljem Haroldom je pomagala ustanoviti podjetje Mattel.</p>
-        <p>Ruth je opazovala otroke in razmišljala, katere igrače bi jim lahko pomagale pri igri. Hotela je, da bi si otroci lahko predstavljali veliko različnih stvari.</p>
-        <DidYouKnow>Ruth ni bila samo oblikovalka igrač. Pomagala je tudi voditi podjetje in sprejemati pomembne odločitve.</DidYouKnow>
-        <div className="question-prompt"><CircleHelp size={21} /><span>KATERO IGRAČO BI TI IZUMILA?</span></div>
+        <p>Opazila je, da se otroci radi igrajo s papirnatimi lutkami in jim izmišljajo različne vloge. Pomislila je, da bi bila prava lutka, ki lahko odraste v katero koli junakinjo, še bolj zanimiva.</p>
+        <DidYouKnow>Ruth je verjela, da igra ni samo zabava. Pri igri otroci vadijo domišljijo in raziskujejo svet.</DidYouKnow>
+        <div className="question-prompt"><CircleHelp size={21} /><span>KAJ BI TI IZUMILA?</span></div>
         <div className="page-actions"><BackButton onClick={() => go(0)} /><NextButton onClick={() => go(2)} /></div>
       </div>
     </div>
@@ -215,10 +215,10 @@ function IdeaPage({ go }: { go: (n: number) => void }) {
       <div className="idea-copy">
         <SectionTag tone="yellow">03 · ZAČETEK</SectionTag>
         <h2>KAKO SE JE<br /><em>ZAČELA ZGODBA?</em></h2>
-        <p>Ruth je opazovala svojo hčerko Barbaro pri igri. Barbara se je rada igrala s papirnatimi lutkami.</p>
+        <p>Ruth je opazovala svojo hčerko Barbaro pri igri. Barbara je papirnatim lutkam izmišljala oblačila, prijatelje in dogodivščine.</p>
         <p>Ruth je pomislila: <strong>»Kaj pa, če bi imela takšna lutka pravo tridimenzionalno obliko?«</strong></p>
-        <p>Tako se je začela razvijati velika zamisel.</p>
-        <DidYouKnow>Barbie je dobila ime po Barbari, hčerki Ruth Handler.</DidYouKnow>
+        <p>Ideja je potrebovala čas, risbe, poskuse in pogum. Vsaka velika stvar se lahko začne z majhnim vprašanjem.</p>
+        <DidYouKnow>Barbie je dobila ime po Barbari, hčerki Ruth Handler. Ime je kratko, prijazno in si ga je lahko zapomniti.</DidYouKnow>
         <div className="page-actions"><BackButton onClick={() => go(1)} /><NextButton onClick={() => go(3)} /></div>
       </div>
       <div className="paper-desk">
@@ -229,6 +229,7 @@ function IdeaPage({ go }: { go: (n: number) => void }) {
           <div className="paper-outfit outfit-one" />
           <div className="paper-outfit outfit-two" />
           <div className="paper-caption">KAKŠNA<br />BO NJENA<br />ZGODBA?</div>
+          <img className="idea-photo" src={supabasePhoto("barbie-sketches.jpg")} alt="Skice oblačil za Barbie" />
         </div>
         <div className="scissors">✂</div><div className="pencil">✎</div>
       </div>
@@ -243,9 +244,9 @@ function LaunchPage({ go }: { go: (n: number) => void }) {
         <SectionTag tone="purple">04 · 1959</SectionTag>
         <h2>BARBIE<br /><em>PRIDE NA SVET</em></h2>
         <div className="big-year">1959</div>
-        <p>Barbie se je prvič pojavila leta <strong>1959</strong>. Takrat je bila drugačna od številnih lutk, ki so jih poznali otroci.</p>
-        <p>Ni bila dojenčica. Z njo so lahko ustvarjali zgodbe o odraščanju, modi in pustolovščinah.</p>
-        <DidYouKnow>Leto 1959 je prvo leto Barbiejine zgodbe.</DidYouKnow>
+        <p>Barbie se je prvič pojavila 9. marca <strong>1959</strong> na sejmu igrač v New Yorku. Oblečena je bila v črno-bele črtaste kopalke.</p>
+        <p>Ni bila dojenčica. Bila je lutka odraslega videza, zato so lahko otroci z njo pripovedovali zgodbe o modi, delu, prijateljstvu in potovanjih.</p>
+        <DidYouKnow>Prva Barbie je stala tri dolarje. Danes je njena podoba prepoznavna po vsem svetu.</DidYouKnow>
         <div className="page-actions"><BackButton onClick={() => go(2)} /><NextButton onClick={() => go(4)} /></div>
       </div>
       <div className="launch-art portrait-layout"><img src={supabasePhoto("barbie-1959.jpg")} alt="Barbie iz leta 1959 v črno-belih kopalkah" /><div className="launch-ribbon">PRVO<br />POGLAVJE</div></div>
@@ -263,9 +264,9 @@ function FirstBarbiePage({ go }: { go: (n: number) => void }) {
       <div className="story-copy first-copy">
         <SectionTag tone="teal">05 · PRVA BARBIE</SectionTag>
         <h2>OBLAČILA<br /><em>POVEDO ZGODBO</em></h2>
-        <p>Prva Barbie je imela posebno pričesko in modna oblačila. Nosila je črno-bel črtast kopalni kostum.</p>
-        <p>Ko se oblačila spremenijo, se lahko spremeni tudi zgodba. Barbie lahko gre na plažo, na zabavo ali na izlet.</p>
-        <DidYouKnow>Njena urejena pričeska je bila značilna za modo poznih petdesetih let.</DidYouKnow>
+        <p>Prva Barbie je imela čop, rdeče ustnice in črno-bele črtaste kopalke. Njen videz je sledil modi poznih petdesetih let.</p>
+        <p>V škatli so bili tudi čevlji, uhani in sončna očala. Dodatki niso bili samo okras: pomagali so ustvariti novo vlogo in novo zgodbo.</p>
+        <DidYouKnow>Barbiejina oblačila so bila majhna, vendar so imela velik učinek: otroci so lahko z njimi spreminjali svet igre.</DidYouKnow>
         <div className="question-prompt"><CircleHelp size={21} /><span>KATERI DODATEK BI DODALA?</span></div>
         <div className="page-actions"><BackButton onClick={() => go(3)} /><NextButton onClick={() => go(5)} /></div>
       </div>
@@ -287,13 +288,13 @@ function CareersPage({ go }: { go: (n: number) => void }) {
       <div className="careers-intro">
         <SectionTag tone="pink">06 · POKLICI</SectionTag>
         <h2>LAHKO SANJAŠ<br /><em>O VELIKIH STVAREH</em></h2>
-        <p>Barbie je imela veliko različnih poklicev. Skozi igro lahko raziskuješ, kaj te zanima.</p>
-        <div className="quote-card">»DANES SI LAHKO ZDRAVNICA. JUTRI PA RAZISKOVALKA VESOLJA.«</div>
-        <div className="story-photo-strip"><img src={supabasePhoto("barbie-astronaut.jpg")} alt="Barbie kot astronavtka, kirurginja in rock zvezda" /><span>BARBIE JE IMELA VELIKO POKLICEV.</span></div>
+        <p>Barbie je skozi leta postala zdravnica, pilotka, znanstvenica, gasilka, računalniška inženirka, predsednica in še marsikaj.</p>
+        <div className="quote-card">»NI TI TREBA IZBRATI SAMO ENE SANJSKE SLUŽBE.«</div>
+        <div className="story-photo-strip"><img src={supabasePhoto("barbie-astronaut.jpg")} alt="Barbie kot astronavtka, kirurginja in rock zvezda" /><span>RAZLIČNI POKLICI · RAZLIČNE ZGODBE</span></div>
         <div className="page-actions"><BackButton onClick={() => go(4)} /><NextButton onClick={() => go(6)} /></div>
       </div>
       <div className="career-grid">
-        {careers.map(({ name, icon: Icon, color }) => <button className={`career-card career-${color}`} key={name} type="button"><Icon size={28} /><strong>{name}</strong><span>ODPRI IDEJO <ArrowRight size={15} /></span></button>)}
+        {careers.map(({ name, icon: Icon, color }) => <button className={`career-card career-${color}`} key={name} type="button"><Icon size={28} /><strong>{name}</strong><span>IGRAJ SE Z IDEJO <ArrowRight size={15} /></span></button>)}
       </div>
     </div>
   );
@@ -303,9 +304,9 @@ function DecadesPage({ go }: { go: (n: number) => void }) {
   const decades = ["1950-TA", "1960-TA", "1970-TA", "1980-TA", "1990-TA", "DANES"];
   return (
     <div className="page-grid timeline-page">
-      <div className="timeline-heading"><SectionTag tone="yellow">07 · DESETLETJA</SectionTag><h2>BARBIE<br /><em>SKOZI ČAS</em></h2><p>Spreminjali so se lasje, oblačila, domovi in poklici. Najpomembnejša stvar pa je ostala enaka: domišljija.</p></div>
+      <div className="timeline-heading"><SectionTag tone="yellow">07 · DESETLETJA</SectionTag><h2>BARBIE<br /><em>SKOZI ČAS</em></h2><p>V petdesetih je bila modna lutka. V šestdesetih je dobila nove poklice in dom. V sedemdesetih je raziskovala svet, pozneje pa tudi tehnologijo, šport in vesolje.</p><p>Vsako desetletje je prineslo nove barve, oblačila in ideje.</p></div>
       <div className="timeline-visual"><img src={supabasePhoto("barbie-1960s.jpg")} alt="Barbiejini poklici iz šestdesetih let" /><div className="timeline-years">{decades.map((d, i) => <span key={d} className={i === 0 ? "active" : ""}>{d}</span>)}</div></div>
-      <div className="timeline-bottom"><div className="mini-timeline-fact"><Clock3 size={20} /><span><strong>ALI VEŠ?</strong> Ko pogledamo stare igrače, lahko opazimo, kako se je spreminjal tudi svet.</span></div><div className="page-actions"><BackButton onClick={() => go(5)} /><NextButton onClick={() => go(7)} /></div></div>
+      <div className="timeline-bottom"><div className="mini-timeline-fact"><Clock3 size={20} /><span><strong>ALI VEŠ?</strong> Ko pogledamo stare igrače, lahko opazimo, kako so se spreminjali moda, tehnologija in predstave o tem, kaj lahko počnejo dekleta.</span></div><div className="page-actions"><BackButton onClick={() => go(5)} /><NextButton onClick={() => go(7)} /></div></div>
     </div>
   );
 }
@@ -313,9 +314,9 @@ function DecadesPage({ go }: { go: (n: number) => void }) {
 function GalleryPage({ go, openImage, items, loading }: { go: (n: number) => void; openImage: (i: number) => void; items: GalleryItem[]; loading: boolean }) {
   return (
     <div className="page-grid gallery-page">
-      <div className="gallery-heading"><SectionTag tone="teal">08 · GALERIJA</SectionTag><h2>POGLEJ.<br /><em>POVEČAJ. RAZIŠČI.</em></h2><p>Tapni na sliko, da jo povečaš. Nato preberi kratek napis.</p></div>
+      <div className="gallery-heading"><SectionTag tone="teal">08 · GALERIJA</SectionTag><h2>POGLEJ.<br /><em>POVEČAJ. RAZIŠČI.</em></h2><p>Fotografije so razporejene po zgodbi. Tapni na sliko, jo povečaj in preberi, kaj prikazuje.</p></div>
       <div className="gallery-grid">{items.map((item, i) => <button className="gallery-card" key={item.filename || item.title} type="button" onClick={() => openImage(i)}><img src={item.src} alt={item.title} /><span className="gallery-expand"><Expand size={17} /></span><div className="gallery-meta"><strong>{item.title}</strong><span>{item.text}</span></div></button>)}</div>
-      <div className="gallery-footer"><div className="mini-note"><ImageIcon size={16} /> {loading ? "NALAGAM SLIKE IZ SUPABASE ..." : "Vsaka slika potrebuje urejen vir ali dovoljenje."}</div><div className="page-actions"><BackButton onClick={() => go(6)} /><NextButton onClick={() => go(8)} /></div></div>
+      <div className="gallery-footer"><div className="mini-note"><ImageIcon size={16} /> {loading ? "NALAGAM SLIKE IZ SUPABASE ..." : `${items.length} FOTOGRAFIJ · VSAKA SLIKA IMA SVOJO ZGODBO`}</div><div className="page-actions"><BackButton onClick={() => go(6)} /><NextButton onClick={() => go(8)} /></div></div>
     </div>
   );
 }
@@ -334,10 +335,10 @@ function QuizPage({ go }: { go: (n: number) => void }) {
   };
   return (
     <div className="page-grid quiz-page">
-      <div className="quiz-heading"><SectionTag tone="purple">09 · KVIZ</SectionTag><h2>PREVERI<br /><em>SVOJE ZNANJE</em></h2><p>Vsaka dobra zgodba se začne z idejo. Zdaj preveri, kaj si si zapomnila.</p></div>
+      <div className="quiz-heading"><SectionTag tone="purple">09 · KVIZ</SectionTag><h2>PREVERI<br /><em>SVOJE ZNANJE</em></h2><p>Tri kratka vprašanja za konec. Če se zmotiš, nič hudega: zgodbo lahko vedno prebereš še enkrat.</p></div>
       <div className="quiz-layout">
         <div className="quiz-card"><div className="quiz-topline"><span>VPRAŠANJE {questionIndex + 1} / {quizQuestions.length}</span><div className="quiz-progress"><i style={{ width: `${((questionIndex + 1) / quizQuestions.length) * 100}%` }} /></div></div><h3>{current.question}</h3><div className="answers">{current.answers.map((answer, i) => <button key={answer} className={`answer ${selected !== null && i === selected ? (answerCorrect ? "answer-correct" : "answer-wrong") : ""}`} type="button" onClick={() => choose(i)}><span className="answer-letter">{String.fromCharCode(65 + i)}</span>{answer}{selected !== null && i === selected && answerCorrect && <Check size={20} />}</button>)}</div>{selected !== null && <div className={`quiz-feedback ${answerCorrect ? "feedback-good" : "feedback-soft"}`}>{answerCorrect ? "ODLIČNO! TO SI SI DOBRO ZAPOMNILA." : "SKORAJ! POSKUSI ŠE ENKRAT."}</div>}{selected !== null && answerCorrect && <button className="next-question" type="button" onClick={nextQuestion}>NASLEDNJE VPRAŠANJE <ArrowRight size={17} /></button>}</div>
-        <div className="create-card"><div className="create-sparkle"><Sparkles size={22} /></div><span className="create-eyebrow">USTVARJALNA NALOGA</span><h3>USTVARI<br /><em>SVOJO BARBIE</em></h3><p>Izberi idejo za njeno službo, dom in veliko pustolovščino.</p><div className="create-fields"><span>IME</span><span>POKLIC</span><span>POSEBNA MOČ</span></div><button className="outline-light" type="button" onClick={() => setCreated(!created)}>{created ? "TVOJA IDEJA JE SHRANJENA!" : "ODPRI RISALNO KARTICO"} <Pencil size={17} /></button></div>
+        <div className="create-card"><div className="create-sparkle"><Sparkles size={22} /></div><span className="create-eyebrow">USTVARJALNA NALOGA</span><h3>USTVARI<br /><em>SVOJO BARBIE</em></h3><p>Nariši junakinjo, ki je podobna tebi. Izberi njeno ime, poklic, najljubši kraj in posebno moč.</p><div className="create-fields"><span>IME JUNAKINJE</span><span>POKLIC ALI HOBI</span><span>POSEBNA MOČ</span></div><button className="outline-light" type="button" onClick={() => setCreated(!created)}>{created ? "TVOJA IDEJA JE SHRANJENA!" : "ODPRI RISALNO KARTICO"} <Pencil size={17} /></button></div>
       </div>
       <div className="quiz-footer"><button className="secondary-button" type="button" onClick={() => go(0)}><HomeIcon size={17} /> NA ZAČETEK</button><span className="end-note"><Sun size={16} /> TVOJA DOMIŠLJIJA JE TVOJA SUPERMOČ.</span></div>
     </div>
