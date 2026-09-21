@@ -181,7 +181,7 @@ function HomePage({ go }: { go: (n: number) => void }) {
         <p className="hero-lede">Majhna lutka. Velika domišljija. Potuj skozi leta in odkrij, kako so iz ene zamisli nastale številne zgodbe, poklici in pustolovščine.</p>
         <div className="hero-actions">
           <NextButton onClick={() => go(1)}>ZAČNI ZGODBO</NextButton>
-          <button className="text-button" type="button" onClick={() => go(7)}><ImageIcon size={18} /> ODPRETI GALERIJO</button>
+          <button className="text-button" type="button" onClick={() => go(18)}><ImageIcon size={18} /> ODPRI GALERIJO</button>
         </div>
         <div className="mini-note"><Sparkles size={16} /> Narejeno za radovedne bralke</div>
       </div>
@@ -192,7 +192,7 @@ function HomePage({ go }: { go: (n: number) => void }) {
         <div className="floating-note note-two"><Palette size={15} /> USTVARJAJ</div>
       </div>
       <div className="hero-bottom-line">
-        <div><span className="line-number">01</span><span>ZAČNIMO PRI ZAČETKU</span></div>
+        <div><span className="line-number">01</span><span>NA ZAČETEK</span></div>
         <div className="scroll-hint"><span className="scroll-dot" /> PODRSNI ZA NADALJEVANJE</div>
       </div>
     </div>
