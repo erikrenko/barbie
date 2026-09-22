@@ -1,80 +1,42 @@
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
+import type { ReactNode } from "react";
 import {
   ArrowLeft,
   ArrowRight,
-  BookOpen,
-  Camera,
   Check,
   ChevronLeft,
   ChevronRight,
-  CircleHelp,
-  Clock3,
-  Expand,
-  Glasses,
   Home as HomeIcon,
-  Image as ImageIcon,
   Lightbulb,
-  Palette,
   Pencil,
   Rocket,
   Sparkles,
-  Stethoscope,
-  Sun,
-  X,
+  Star,
+  WandSparkles,
 } from "lucide-react";
 
-const ASSETS = {
+const SUPABASE_PROJECT_URL = "https://cwkwdstkqfsuawpdhuka.supabase.co";
+const photo = (filename: string) => `${SUPABASE_PROJECT_URL}/storage/v1/object/public/barb/${encodeURIComponent(filename)}`;
+
+const assets = {
   hero: "/manus-storage/barbie-hero_7ebe8515.png",
-  ruth: "/manus-storage/ruth-handler-illustration_b3dff029.png",
-  decades: "/manus-storage/barbie-decades_10d4eb95.png",
-  aerobics: "https://cwkwdstkqfsuawpdhuka.supabase.co/storage/v1/object/public/barb/barbie-aerobics.jpg",
+  ruth: photo("ruth-handler-portret.jpg"),
+  sketches: photo("barbie-sketches.jpg"),
+  first: photo("barbie-1959-original.jpg"),
+  ken: photo("barbie-ken.jpg"),
+  home: photo("barbie-first-dreamhouse.jpg"),
+  car: photo("barbie-first-car.jpg"),
+  camper: photo("barbie-first-camper.jpg"),
+  astronaut: photo("barbie-astronaut.jpg"),
+  careers: photo("barbie-1960s.jpg"),
+  fashion: photo("barbie-look.jpg"),
+  world: photo("barbie-dolls-of-the-world.jpg"),
+  diversity: photo("barbie-razlicne.jpg"),
+  screen: photo("barbie-gabby.jpg"),
 };
 
-const SUPABASE_URL_VALUE = (import.meta.env.VITE_SUPABASE_URL || "https://cwkwdstkqfsuawpdhuka.supabase.co").replace(/\/$/, "");
-const SUPABASE_PROJECT_URL = SUPABASE_URL_VALUE.startsWith("http") ? SUPABASE_URL_VALUE : `https://${SUPABASE_URL_VALUE}.supabase.co`;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
-const supabasePhoto = (filename: string) => `${SUPABASE_PROJECT_URL}/storage/v1/object/public/barb/${encodeURIComponent(filename)}`;
-
-type GalleryItem = { src: string; title: string; text: string; filename?: string };
-
-const photoDescriptions: Record<string, string> = {
-  "barbie-aerobics.jpg": "Aerobics Instructor Barbie je v osemdesetih letih pokazala, da je lahko telovadba tudi zabavna.",
-  "barbie-1959.jpg": "Mattelova prva Barbie iz leta 1959 v značilnih črno-belih kopalkah.",
-  "barbie-1960.jpg": "Wedding Day Barbie iz leta 1960 je nosila poročno obleko in tančico.",
-  "barbie-1959-piknik.jpg": "Zbirka oblačil in dodatkov za piknik, kuhanje in izlet iz leta 1959.",
-  "barbie-1959-shopper.jpg": "Tri modne podobe Barbie iz leta 1959 za nakupovanje, potovanje in vsakdan.",
-  "barbie-1959-original.jpg": "Prva Barbie s črno-belimi zebrastimi kopalkami in črnimi čevlji.",
-  "barbie-astronaut.jpg": "Barbie kot astronavtka, kirurginja in rock zvezda raziskuje različne poklice.",
-  "barbie-medicinska-sestra.jpg": "Barbie kot vojaška zdravnica, predsednica in arhitektka.",
-  "barbie-gabby.jpg": "Lutka Gabby Douglas iz leta 2018 slavi izjemno telovadko in vzornico.",
-  "barbie-amelia.jpg": "Amelia Earhart, Frida Kahlo in Katherine Johnson v zbirki navdihujočih žensk.",
-  "barbie-look.jpg": "Različne modne in poklicne podobe Barbie, ki spodbujajo velike sanje.",
-  "barbie-1960s.jpg": "Zbirka poklicnih Barbie iz šestdesetih let: poslovna ženska, medicinska sestra, stevardesa in karieristka.",
-  "barbie-sketches.jpg": "Skice oblačil, ki so navdihnile modne podobe Barbie v šestdesetih letih.",
-  "barbie-dolls-of-the-world.jpg": "Barbie iz zbirke Dolls of the World predstavlja različne ljudi in kulture.",
-  "barbie-vozicek.jpg": "Share-a-Smile Becky iz leta 1997 je bila Barbiejina prijateljica na invalidskem vozičku.",
-  "barbie-pilotka.jpg": "Barbie kot pilotka ob 60. obletnici leta 2019.",
-  "barbie-razlicne.jpg": "Leta 2016 je Barbie dobila različne oblike telesa, višine in postave.",
-  "barbie-amputee.jpg": "Barbie z amputacijo pomaga otrokom prepoznati različne življenjske izkušnje.",
-  "barbie-first-dreamhouse.jpg": "Barbiejina prva hiša iz leta 1962 je predstavljala samostojnost in domišljijo.",
-  "barbie-first-car.jpg": "Leta 1962 se je Barbie prvič odpeljala na pot v športnem avtomobilu.",
-  "barbie-first-camper.jpg": "Leta 1971 je Barbie dobila avtodom za pustolovščine v naravi.",
-  "barbie-first-surgeon.jpg": "Surgeon Barbie iz leta 1973 je otrokom pokazala, da lahko zdravijo in rešujejo življenja.",
-  "barbie-police.jpg": "Leta 1993 je Barbie kot policistka pokazala, da lahko dekleta sodelujejo pri skrbi za skupnost.",
-  "barbie-winter.jpg": "Winter Sports Barbie je otroke spodbujala k raziskovanju zimskih športov.",
-  "barbie-firefighter.jpg": "Firefighter Barbie je leta 1995 pokazala, da so lahko junakinje tudi gasilke.",
-  "barbie-sign.jpg": "Sign Language Teacher Barbie je otroke spodbujala k učenju znakovnega jezika.",
-  "barbie-zoo.jpg": "Zoologist Barbie je raziskovala delo z živalmi in skrb za naravo.",
-  "barbie-computer.jpg": "Computer Engineer Barbie je leta 2010 predstavljala poklic v računalništvu.",
-  "barbie-news.jpg": "Barbie kot novinarka je pokazala, da imajo ženske prostor tudi v medijih.",
-  "barbie-chef.jpg": "Barbie kot glavna kuharica in slaščičarka je navdihovala mlade ljubiteljice hrane.",
-  "barbie-builder.jpg": "Builder Barbie je dekleta povabila v svet gradnje, orodja in velikih načrtov.",
-  "barbie-ken.jpg": "Originalna Barbie in Ken v kopalkah iz leta 1959.",
-  "barbie-dreamhouse.jpg": "Barbie v dnevni sobi prve Dreamhouse iz leta 1961.",
-  "barbie-sew.jpg": "Sew-Free Fashion-Fun iz leta 1963 je otrokom omogočil ustvarjanje oblačil brez šivanja.",
-};
-
-const pages = [
+type Page = { number: string; label: string; title: string; kicker: string };
+const pages: Page[] = [
   { number: "01", label: "UVOD", title: "DOBRODOŠLA V BARBIJINI ZGODBI", kicker: "POTOVANJE SKOZI ČAS" },
   { number: "02", label: "USTVARJALKA", title: "KDO JE BILA RUTH HANDLER?", kicker: "IDEJA SE ZAČNE Z OPAZOVANJEM" },
   { number: "03", label: "ZAČETEK", title: "KAKO SE JE ZAČELA ZGODBA?", kicker: "PAPIRNATE LUTKE IN VELIKA IDEJA" },
@@ -83,363 +45,80 @@ const pages = [
   { number: "06", label: "PRVA BARBIE", title: "PRVA BARBIE", kicker: "OBLAČILA POVEDO ZGODBO" },
   { number: "07", label: "KEN", title: "PRIDE TUDI KEN", kicker: "PRIJATELJ ZA NOVE ZGODBE" },
   { number: "08", label: "DOM", title: "BARBIE DOBI SVOJ DOM", kicker: "DREAMHOUSE IN DOMIŠLJIJA" },
-  { number: "09", label: "POTOVANJE", title: "NA POTI Z BARBIE", kicker: "AVTO, AVTODOM IN PUSTOLOVŠČINE" },
-  { number: "10", label: "POKLICI", title: "BARBIE IN NJENI POKLICI", kicker: "LAHKO SANJAŠ O VELIKIH STVAREH" },
-  { number: "11", label: "VESOLJE", title: "BARBIE GLEDA PROTI ZVEZDAM", kicker: "ZNANOST, TEHNOLOGIJA IN POGUM" },
-  { number: "12", label: "VSAKDO", title: "BARBIE ZA VSAKOGAR", kicker: "RAZLIČNOSTI SO DEL ZGODBE" },
-  { number: "13", label: "MODA", title: "OBLAČILA SE SPREMINJAJO", kicker: "OD KOPALK DO VELIKEGA ODIJA" },
-  { number: "14", label: "DESETLETJA", title: "BARBIE SKOZI DESETLETJA", kicker: "MODO SPREMINJAJO ČAS IN IDEJE" },
-  { number: "15", label: "SVET", title: "BARBIE OKOLI SVETA", kicker: "RAZLIČNE KULTURE, VELIKO ZGODB" },
-  { number: "16", label: "NA ZASLONU", title: "BARBIE POSTANE JUNAKINJA", kicker: "RISANKE, FILMI IN NOVE PUSTOLOVŠČINE" },
-  { number: "17", label: "DANES", title: "KAJ POMENI BARBIE DANES?", kicker: "NOVA VPRAŠANJA, NOVE MOŽNOSTI" },
-  { number: "18", label: "GALERIJA", title: "SLIKOVNA GALERIJA", kicker: "POGLEJ, POVEČAJ, RAZIŠČI" },
-  { number: "19", label: "KVIZ", title: "KVIZ IN USTVARJALNA NALOGA", kicker: "TVOJA DOMIŠLJIJA JE TVOJA SUPERMOČ" },
-  { number: "20", label: "KONEC", title: "PREVERI IN USTVARI", kicker: "ZDAJ SI NA VRSTI TI" },
+  { number: "09", label: "AVTO", title: "BARBIE DOBI AVTO", kicker: "NA POTI JE VEDNO NOVA ZGODBA" },
+  { number: "10", label: "ASTRONAVTKA", title: "BARBIE GLEDA PROTI ZVEZDAM", kicker: "KAJ VSE LAHKO POSTANEŠ?" },
+  { number: "11", label: "AVTODOM", title: "BARBIE DOBI AVTODOM", kicker: "VELIKE PUSTOLOVŠČINE V NARAVI" },
+  { number: "12", label: "POKLICI", title: "BARBIE IN ŠTEVILNI POKLICI", kicker: "LAHKO RAZISKUJEŠ, POMAGAŠ IN USTVARJAŠ" },
+  { number: "13", label: "USTVARJALCI", title: "ZA VSAKIM VIDEZOM JE IDEJA", kicker: "OBLIKOVANJE JE TUDI POKLIC" },
+  { number: "14", label: "DESETLETJA", title: "BARBIE SKOZI DESETLETJA", kicker: "ČAS SPREMINJA MODE IN IDEJE" },
+  { number: "15", label: "SVET", title: "BARBIE OKOLI SVETA", kicker: "RAZLIČNI KRAJI, VELIKO ZGODB" },
+  { number: "16", label: "RAZNOLIKOST", title: "BARBIE ZA VSAKOGAR", kicker: "RAZLIČNOSTI SO DEL ZGODBE" },
+  { number: "17", label: "NA ZASLONU", title: "BARBIE POSTANE JUNAKINJA", kicker: "RISANKE, KNJIGE, VIDEI IN FILMI" },
+  { number: "18", label: "DANES", title: "KAJ POMENI BARBIE DANES?", kicker: "NOVE IDEJE, NOVE MOŽNOSTI" },
+  { number: "19", label: "POVZETEK", title: "KAJ SI ODKRILA?", kicker: "SESTAVI SVOJO POT SKOZI ZGODBO" },
+  { number: "20", label: "USTVARJANJE", title: "ZDAJ SI NA VRSTI TI", kicker: "USTVARI SVOJO JUNAKINJO" },
 ];
 
-const fallbackGallery: GalleryItem[] = [
-  { src: ASSETS.hero, title: "Barbie leta 1959", text: "Ena prvih Barbie in začetek velike zgodbe." },
-  { src: ASSETS.ruth, title: "Ideje za novo igračo", text: "Ustvarjanje se pogosto začne z risbo, vprašanjem in radovednostjo." },
-  { src: ASSETS.aerobics, title: "Barbie pri aerobiki", text: "Aerobika je bila priljubljena telovadba v osemdesetih letih." },
-];
+const story: Record<number, { image?: string; alt?: string; paragraphs: string[]; fact?: string; question?: string; tone?: "pink" | "teal" | "yellow" | "purple"; chips?: string[] }> = {
+  1: { image: assets.ruth, alt: "Ruth Handler", paragraphs: ["Ruth Handler je bila ena od ustvarjalk Barbie. Skupaj z možem Elliotom in prijateljem Haroldom je pomagala ustanoviti podjetje Mattel.", "Opazila je, da se otroci radi igrajo s papirnatimi lutkami in jim izmišljajo različne vloge. Pomislila je, da bi bila prava lutka, ki lahko postane katera koli junakinja, še bolj zanimiva."], fact: "Velike ideje se pogosto začnejo z opazovanjem in vprašanjem.", question: "KAJ BI TI IZUMILA?", tone: "pink" },
+  2: { image: assets.sketches, alt: "Skice oblačil", paragraphs: ["Ruth je opazovala svojo hčerko Barbaro pri igri. Barbara je papirnatim lutkam izmišljala oblačila, prijatelje in dogodivščine.", "Ruth je pomislila: Kaj pa, če bi imela takšna lutka pravo tridimenzionalno obliko? Ideja je potrebovala risbe, poskuse in pogum."], fact: "Barbie je dobila ime po Barbari, hčerki Ruth Handler.", question: "KAKŠNA BI BILA TVOJA LUTKA?", tone: "yellow" },
+  3: { paragraphs: ["Preden je nastala Barbie, je v Nemčiji obstajala lutka Lilli. Ruth Handler jo je videla na potovanju in opazila, da ni podobna dojenčici.", "Lilli ni bila Barbie in Barbie ni njena kopija. Pomagala pa je Ruth razmišljati o novi vrsti lutke: lutki z odraslim videzom, oblačili in lastnimi zgodbami."], fact: "Dobra ideja lahko nastane tako, da nekaj opazujemo in si predstavljamo drugačno možnost.", question: "KAJ BI SPREMENILA?", tone: "purple" },
+  4: { image: assets.first, alt: "Prva Barbie", paragraphs: ["Barbie se je prvič predstavila 9. marca 1959 na sejmu igrač v New Yorku. Nosila je črno-bele črtaste kopalke in imela svetle lase.", "Ni bila dojenčica. Bila je modna najstnica, ki je lahko odšla na zabavo, potovanje ali v novo pustolovščino."], fact: "Prva Barbie je imela dve različni pričeski in zelo majhno garderobo v primerjavi z današnjim svetom igre.", question: "KAM BI ŠLA PRVA BARBIE?", tone: "pink" },
+  5: { image: assets.first, alt: "Barbie iz leta 1959", paragraphs: ["Prva Barbie je prišla z eno pomembno idejo: otrok lahko zamenja njeno obleko in ji izmisli novo vlogo.", "Oblačila niso bila samo okras. Povedala so, kam Barbie gre, kaj počne in kakšno zgodbo lahko začne."], fact: "Barbie je bila predstavljena kot najstniška modna manekenka.", question: "KAKŠNO ZGODBO POVE OBLEKA?", tone: "pink", chips: ["NA ZABAVO", "NA DELO", "NA PUSTOLOVŠČINO"] },
+  6: { image: assets.ken, alt: "Barbie in Ken", paragraphs: ["Leta 1961 se je Barbiejinemu svetu pridružil Ken. Otroci so lahko z njima ustvarili zgodbe o prijateljstvu, izletih in druženju.", "Pozneje so prišle še Midge, Skipper, Christie in druge prijateljice ter družinski člani. Barbijin svet je postal večji."], fact: "Ken je dobil ime po sinu Ruth in Elliota Handlerja.", question: "KDO BI BIL V TVOJI ZGODBI?", tone: "teal" },
+  7: { image: assets.home, alt: "Dreamhouse", paragraphs: ["Leta 1962 je Barbie dobila svoj dom. Dreamhouse ni bil samo predmet, ampak prostor, kjer se je lahko zgodilo marsikaj.", "V domu se lahko nekdo pripravi na delo, povabi prijatelje, skuha kosilo ali načrtuje novo pustolovščino."], fact: "Barbiejin prvi dom je bil bolj podoben mestnemu stanovanju kot današnji veliki hiši.", question: "KAJ MORA IMETI TVOJ DOM?", tone: "yellow" },
+  8: { image: assets.car, alt: "Barbiejin prvi avto", paragraphs: ["Leta 1962 je Barbie dobila tudi avto. Z njim se je lahko odpeljala iz doma in odprla novo poglavje zgodbe.", "Avto v igri pomeni gibanje: lahko pelje na plažo, v službo, po prijateljico ali na kraj, ki ga še nihče ne pozna."], fact: "Ko dobi junakinja vozilo, se njen svet igre razširi na cesto in nove kraje.", question: "KAM BI SE ODPELJALA?", tone: "teal" },
+  9: { image: assets.astronaut, alt: "Barbie kot astronavtka", paragraphs: ["Leta 1965 je Barbie postala astronavtka. Takrat je bilo žensk v vesoljskih poklicih zelo malo.", "Vesolje tukaj ni samo stvar, ki jo kupiš. Je primer poklica in sanj: kaj lahko raziskuješ, kaj se lahko naučiš in kaj lahko postaneš."], fact: "Barbie je bila astronavtka že pred prvim človekom na Luni.", question: "KAJ BI RAZISKOVALA?", tone: "purple", chips: ["ODKRIVAM", "POMAGAM", "USTVARJAM", "NAČRTUJEM"] },
+  10: { image: assets.camper, alt: "Barbiejin avtodom", paragraphs: ["Leta 1971 je Barbie dobila avtodom. Z njim se je lahko odpravila v naravo, na izlet in na velike pustolovščine.", "Dom, avto in avtodom so predmeti, ki razširijo svet igre. Poklici pa so drugačna tema: pokažejo, kaj lahko nekdo dela in v čem lahko postane dober."], fact: "Avtodom združi dve stvari: potovanje in občutek doma.", question: "KAM BI ŠLA NA IZLET?", tone: "yellow" },
+  11: { image: assets.careers, alt: "Različni Barbiejini poklici", paragraphs: ["Barbie je skozi leta postala zdravnica, pilotka, znanstvenica, računalniška inženirka, fotografinja, športnica in še marsikaj.", "Poklic ni samo obleka. Za vsakim poklicem so znanje, vaja, pripomočki in ljudje, ki sodelujejo."], fact: "Lahko poskusiš več stvari. Tvoja pot ni nujno samo ena.", question: "KAJ TE NAJBOLJ ZANIMA?", tone: "teal", chips: ["ODKRIVAM", "POMAGAM", "USTVARJAM", "VODIM"] },
+  12: { image: assets.fashion, alt: "Barbiejin modni videz", paragraphs: ["Za vsakim Barbiejinim videzom je ideja. Nekdo izbere barve, nariše načrt, izbere blago in oblačilo izdela.", "Oblikovalke, ilustratorke, fotografinje in stilistke sodelujejo, da videz pomaga povedati zgodbo."], fact: "Ustvarjalni poklici potrebujejo domišljijo, načrtovanje, natančnost in veliko vaje.", question: "KAKŠNO OBLEKO BI OBLIKOVALA?", tone: "pink", chips: ["NARIŠI", "IZBERI", "IZDELAJ", "POKAŽI"] },
+  13: { image: assets.careers, alt: "Barbie skozi desetletja", paragraphs: ["Barbie se je skozi leta spreminjala. Spreminjali so se njeni lasje, oblačila, poklici, prijatelji in pripomočki.", "Ko pogledamo staro igračo, lahko opazimo tudi, kako so se spreminjali moda, tehnologija in predstave o tem, kaj lahko počnejo dekleta."], fact: "Zgodovina ni samo zbirka letnic. Je zgodba o tem, kako se spreminjajo ideje.", question: "KATERA SPREMEMBA TE JE PRESENETILA?", tone: "yellow", chips: ["1959", "1965", "1971", "2016", "2019", "2023"] },
+  14: { image: assets.world, alt: "Barbie iz različnih krajev sveta", paragraphs: ["Barbie so spoznavali ljudje v številnih delih sveta. Nastajale so lutke, ki so se navdihovale pri različnih krajih, oblačilih in tradicijah.", "Pri tem je pomembno biti radoveden in spoštljiv. Nobena lutka ne more predstaviti vseh ljudi iz neke države. Lahko pa nas spodbudi, da se učimo in poslušamo prave zgodbe."], fact: "Kultura ni kostum. Za vsako podobo obstajajo resnični ljudje, zgodbe in tradicije.", question: "KATERO VPRAŠANJE BI POSTAVILA?", tone: "purple" },
+  15: { image: assets.diversity, alt: "Različne Barbie", paragraphs: ["Ljudje niso vsi videti enako, se ne gibljejo enako in ne živijo na enak način. Zato so se spreminjale tudi Barbie in njene prijateljice.", "Raznolikost pomeni, da smo ljudje različni. Vključevanje pa pomeni, da lahko vsi sodelujemo in se v zgodbi prepoznamo."], fact: "Vsakdo si zasluži, da je v zgodbi viden, sprejet in dobrodošel.", question: "KAKO LAHKO VKLJUČIŠ DRUGE?", tone: "teal", chips: ["POSLUŠAM", "VPRAŠAM", "PRILAGODIM", "POVABIM"] },
+  16: { image: assets.screen, alt: "Barbie v sodobni zgodbi", paragraphs: ["Barbie je prišla tudi v knjige, risanke, spletne videe in filme. Na zaslonu ni bila samo lutka, ampak junakinja, ki rešuje težave in se uči iz napak.", "Leta 2023 je film Barbie odprl nove pogovore o tem, kaj Barbie pomeni različnim ljudem. Njena zgodba se nadaljuje vsakič, ko si nekdo izmisli novo pustolovščino."], fact: "En lik lahko živi v knjigi, risanki, videu, filmu ali otroški igri.", question: "KAKO BI POVEDALA SVOJO ZGODBO?", tone: "pink", chips: ["KNJIGA", "RISANKA", "VIDEO", "GLEDALIŠČE"] },
+  17: { paragraphs: ["Danes Barbie povezuje igro, modo, poklice, prijateljstvo, raznolikost in ustvarjanje.", "Najpomembnejše vprašanje ni, katera Barbie je najboljša. Vprašanje je: katera zgodba tebe najbolj zanima?"], fact: "Barbiejina zgodba se še vedno spreminja, ker jo vsaka generacija bere na svoj način.", question: "KAJ BI TI DODALA V NJENO ZGODBO?", tone: "yellow" },
+};
 
-async function loadSupabaseGallery(): Promise<GalleryItem[]> {
-  if (!SUPABASE_ANON_KEY) return fallbackGallery;
-  const response = await fetch(`${SUPABASE_PROJECT_URL}/storage/v1/object/list/barb`, {
-    method: "POST",
-    headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ prefix: "", limit: 100, offset: 0, sortBy: { column: "name", order: "asc" } }),
-  });
-  if (!response.ok) throw new Error(`Supabase Storage list failed: ${response.status}`);
-  const files = await response.json() as Array<{ name?: string; id?: string }>;
-  const items = files.filter((file) => file.name && /\.(jpg|jpeg|png|webp)$/i.test(file.name)).map((file) => {
-    const filename = file.name as string;
-    const label = filename.replace(/\.[^.]+$/, "").replace(/-/g, " ");
-    return { filename, src: `${SUPABASE_PROJECT_URL}/storage/v1/object/public/barb/${encodeURIComponent(filename)}`, title: label.toUpperCase(), text: photoDescriptions[filename] || "Fotografija iz Barbijine zgodbe." };
-  });
-  return items.length ? items : fallbackGallery;
-}
-
-const quizQuestions = [
-  {
-    question: "KDAJ SE JE BARBIE PRVIČ POJAVILA?",
-    answers: ["LETA 1945", "LETA 1959", "LETA 2000"],
-    correct: 1,
-  },
-  {
-    question: "PO KOM JE BARBIE DOBILA IME?",
-    answers: ["PO MESTU", "PO ROŽI", "PO BARBARI, HČERKI RUTH HANDLER"],
-    correct: 2,
-  },
-  {
-    question: "KAJ LAHKO OTROCI RAZISKUJEJO PRI IGRI?",
-    answers: ["RAZLIČNE ZGODBE IN POKLICE", "SAMO ENO IGRO", "SAMO ŠPORT"],
-    correct: 0,
-  },
-];
-
-function SectionTag({ children, tone = "pink" }: { children: React.ReactNode; tone?: "pink" | "teal" | "yellow" | "purple" }) {
-  return <span className={`section-tag tag-${tone}`}>{children}</span>;
-}
-
-function NextButton({ onClick, children = "NAPREJ" }: { onClick: () => void; children?: React.ReactNode }) {
-  return (
-    <button className="primary-button" onClick={onClick} type="button">
-      {children}
-      <ArrowRight size={20} strokeWidth={2.4} />
-    </button>
-  );
-}
-
-function BackButton({ onClick }: { onClick: () => void }) {
-  return (
-    <button className="secondary-button" onClick={onClick} type="button">
-      <ArrowLeft size={18} />
-      NAZAJ
-    </button>
-  );
-}
-
-function DidYouKnow({ children }: { children: React.ReactNode }) {
-  return (
-    <aside className="fact-card">
-      <div className="fact-icon"><Lightbulb size={20} fill="currentColor" /></div>
-      <div>
-        <div className="fact-title">ALI VEŠ?</div>
-        <div className="fact-copy">{children}</div>
-      </div>
-    </aside>
-  );
-}
+function SectionTag({ children, tone = "pink" }: { children: ReactNode; tone?: "pink" | "teal" | "yellow" | "purple" }) { return <span className={`section-tag tag-${tone}`}>{children}</span>; }
+function NextButton({ onClick, children = "NAPREJ" }: { onClick: () => void; children?: ReactNode }) { return <button className="primary-button" onClick={onClick} type="button">{children}<ArrowRight size={19} /></button>; }
+function BackButton({ onClick }: { onClick: () => void }) { return <button className="secondary-button" onClick={onClick} type="button"><ArrowLeft size={17} /> NAZAJ</button>; }
+function Fact({ children }: { children: ReactNode }) { return <aside className="fact-card"><div className="fact-icon"><Lightbulb size={19} fill="currentColor" /></div><div><div className="fact-title">ALI VEŠ?</div><div className="fact-copy">{children}</div></div></aside>; }
 
 function HomePage({ go }: { go: (n: number) => void }) {
-  return (
-    <div className="page-grid hero-page">
-      <div className="hero-copy">
-        <SectionTag tone="teal">20 POSTAJ</SectionTag>
-        <h1>BARBIJINA<br /><em>ZGODBA</em></h1>
-        <p className="hero-lede">Majhna lutka. Velika domišljija. Potuj skozi leta in odkrij, kako so iz ene zamisli nastale številne zgodbe, poklici in pustolovščine.</p>
-        <div className="hero-actions">
-          <NextButton onClick={() => go(1)}>ZAČNI ZGODBO</NextButton>
-          <button className="text-button" type="button" onClick={() => go(18)}><ImageIcon size={18} /> ODPRI GALERIJO</button>
-        </div>
-        <div className="mini-note"><Sparkles size={16} /> Narejeno za radovedne bralke</div>
-      </div>
-      <div className="hero-art-wrap">
-        <img src={ASSETS.hero} alt="Ilustracija modne lutke in časovne skicirke" className="hero-art" />
-        <div className="year-sticker"><span>OD</span><strong>1959</strong><span>DO DANES</span></div>
-        <div className="floating-note note-one"><Sparkles size={15} /> 65+ LET IDEJ</div>
-        <div className="floating-note note-two"><Palette size={15} /> USTVARJAJ</div>
-      </div>
-      <div className="hero-bottom-line">
-        <div><span className="line-number">01</span><span>NA ZAČETEK</span></div>
-        <div className="scroll-hint"><span className="scroll-dot" /> PODRSNI ZA NADALJEVANJE</div>
-      </div>
-    </div>
-  );
+  return <div className="home-page page-grid"><div className="hero-copy"><SectionTag tone="teal">20 STRANI · SLOVENSKA ZGODBA</SectionTag><h1>BARBIJINA<br /><em>ZGODBA</em></h1><p className="hero-lede">Majhna lutka. Velika domišljija. Potuj skozi leta in odkrij, kako so iz ene zamisli nastale številne zgodbe, poklici in pustolovščine.</p><div className="hero-actions"><NextButton onClick={() => go(1)}>ZAČNI ZGODBO</NextButton><button className="text-button" type="button" onClick={() => go(18)}><Star size={17} /> KAJ SI ODKRILA?</button></div><div className="mini-note"><Sparkles size={16} /> Narejeno za radovedne bralke</div></div><div className="hero-art-wrap"><img src={assets.hero} className="hero-art" alt="Ilustracija Barbiejine zgodbe" /><div className="year-sticker"><span>OD</span><strong>1959</strong><span>DO DANES</span></div><div className="floating-note note-one"><Sparkles size={14} /> 65+ LET IDEJ</div><div className="floating-note note-two"><Pencil size={14} /> USTVARJAJ</div></div><div className="hero-bottom-line"><span><b>01</b> NA ZAČETEK</span><span className="scroll-hint"><i /> PODRSNI ZA NADALJEVANJE</span></div></div>;
 }
 
-function RuthPage({ go }: { go: (n: number) => void }) {
-  return (
-    <div className="page-grid story-page split-page">
-      <div className="story-art-card art-card-coral">
-        <img className="ruth-photo" src={supabasePhoto("ruth-handler-portret.jpg")} alt="Portret Ruth Handler" />
-        <div className="image-caption"><span>USTVARJALKA</span><strong>RUTH HANDLER</strong></div>
-        <div className="stamp">IDEJA<br />+<br />POGUM</div>
-      </div>
-      <div className="story-copy">
-        <SectionTag tone="pink">02 · USTVARJALKA</SectionTag>
-        <h2>KDO JE BILA<br /><em>RUTH HANDLER?</em></h2>
-        <p>Ruth Handler je bila ena od ustvarjalk Barbie. Skupaj z možem Elliotom in prijateljem Haroldom je pomagala ustanoviti podjetje Mattel.</p>
-        <p>Opazila je, da se otroci radi igrajo s papirnatimi lutkami in jim izmišljajo različne vloge. Pomislila je, da bi bila prava lutka, ki lahko odraste v katero koli junakinjo, še bolj zanimiva.</p>
-        <DidYouKnow>Ruth je verjela, da igra ni samo zabava. Pri igri otroci vadijo domišljijo in raziskujejo svet.</DidYouKnow>
-        <div className="question-prompt"><CircleHelp size={21} /><span>KAJ BI TI IZUMILA?</span></div>
-        <div className="page-actions"><BackButton onClick={() => go(0)} /><NextButton onClick={() => go(2)} /></div>
-      </div>
-    </div>
-  );
+function StoryPage({ index, go }: { index: number; go: (n: number) => void }) {
+  const item = story[index];
+  const meta = pages[index];
+  return <div className="story-page page-grid"><div className="story-media">{item.image ? <img src={item.image} alt={item.alt || meta.title} /> : <div className={`illustrated-placeholder tone-${item.tone || "pink"}`}><Sparkles size={44} /><strong>{meta.label}</strong></div>}<div className="media-label">{meta.number} · {meta.label}</div></div><div className="story-copy"><SectionTag tone={item.tone || "pink"}>{meta.number} · {meta.label}</SectionTag><h2>{meta.title.split(" ").slice(0, -1).join(" ")} <em>{meta.title.split(" ").slice(-1)}</em></h2>{item.paragraphs.map((p, i) => <p key={i}>{p}</p>)}{item.fact && <Fact>{item.fact}</Fact>}{item.chips && <div className="chip-row">{item.chips.map((chip) => <span key={chip} className="choice-chip">{chip}</span>)}</div>}{item.question && <div className="question-prompt"><Star size={18} /> {item.question}</div>}<div className="page-actions"><BackButton onClick={() => go(index - 1)} /><NextButton onClick={() => go(index + 1)} /></div></div></div>;
 }
 
-function IdeaPage({ go }: { go: (n: number) => void }) {
-  return (
-    <div className="page-grid story-page idea-page">
-      <div className="idea-copy">
-        <SectionTag tone="yellow">03 · ZAČETEK</SectionTag>
-        <h2>KAKO SE JE<br /><em>ZAČELA ZGODBA?</em></h2>
-        <p>Ruth je opazovala svojo hčerko Barbaro pri igri. Barbara je papirnatim lutkam izmišljala oblačila, prijatelje in dogodivščine.</p>
-        <p>Ruth je pomislila: <strong>»Kaj pa, če bi imela takšna lutka pravo tridimenzionalno obliko?«</strong></p>
-        <p>Ideja je potrebovala čas, risbe, poskuse in pogum. Vsaka velika stvar se lahko začne z majhnim vprašanjem.</p>
-        <DidYouKnow>Barbie je dobila ime po Barbari, hčerki Ruth Handler. Ime je kratko, prijazno in si ga je lahko zapomniti.</DidYouKnow>
-        <div className="page-actions"><BackButton onClick={() => go(1)} /><NextButton onClick={() => go(3)} /></div>
-      </div>
-      <div className="paper-desk">
-        <div className="paper-desk-label"><Pencil size={15} /> USTVARJALNI KOTIČEK</div>
-        <div className="paper-sheet sheet-back"><span>IDEJE</span><div className="scribble-line" /></div>
-        <div className="paper-sheet sheet-front">
-          <div className="paper-doll"><div className="doll-head" /><div className="doll-body" /><div className="doll-leg left" /><div className="doll-leg right" /></div>
-          <div className="paper-outfit outfit-one" />
-          <div className="paper-outfit outfit-two" />
-          <div className="paper-caption">KAKŠNA<br />BO NJENA<br />ZGODBA?</div>
-          <img className="idea-photo" src={supabasePhoto("barbie-sketches.jpg")} alt="Skice oblačil za Barbie" />
-        </div>
-        <div className="scissors">✂</div><div className="pencil">✎</div>
-      </div>
-    </div>
-  );
+const summaryCards = ["RUTH IN IDEJA", "BARBIE LETA 1959", "KEN IN PRIJATELJI", "DOM IN POTOVANJE", "POKLICI IN SANJE", "RAZNOLIKOST IN NOVE ZGODBE"];
+const reasons = ["KER ME JE PRESENETILA", "KER MI JE BILA VŠEČ FOTOGRAFIJA", "KER BI TO RADA POSKUSILA TUDI SAMA", "KER SEM SE NEKAJ NOVEGA NAUČILA"];
+function SummaryPage({ go }: { go: (n: number) => void }) {
+  const [selected, setSelected] = useState<string[]>([summaryCards[0], summaryCards[4], summaryCards[5]]);
+  const [reason, setReason] = useState(reasons[0]);
+  const toggle = (card: string) => setSelected((current) => current.includes(card) ? current.filter((x) => x !== card) : current.length < 3 ? [...current, card] : current);
+  return <div className="summary-page page-grid"><div className="summary-intro"><SectionTag tone="yellow">19 · POVZETEK</SectionTag><h2>KAJ SI <em>ODKRILA?</em></h2><p>Izberi tri postaje, ki so ti najbolj ostale v spominu. To ni test. To je tvoja različica Barbijine zgodbe.</p><div className="summary-statement"><span>MOJA ZGODBA</span><strong>{selected.length ? selected.join(" → ") : "IZBERI TRI POSTAJE"}</strong><small>Najbolj mi je ostala v spominu, ker {reason.toLowerCase()}.</small></div><div className="page-actions"><BackButton onClick={() => go(17)} /><NextButton onClick={() => go(19)}>USTVARI JUNAKINJO</NextButton></div></div><div className="summary-panel"><div className="panel-heading"><span>IZBERI TRI POSTAJE</span><b>{selected.length}/3</b></div><div className="summary-card-grid">{summaryCards.map((card) => <button type="button" key={card} className={`summary-card ${selected.includes(card) ? "is-selected" : ""}`} onClick={() => toggle(card)}><span>{selected.includes(card) ? <Check size={17} /> : <span className="card-dot" />}</span>{card}</button>)}</div><div className="reason-block"><div className="panel-heading"><span>ZAKAJ?</span></div><div className="reason-row">{reasons.map((item) => <button key={item} type="button" className={reason === item ? "reason-chip is-selected" : "reason-chip"} onClick={() => setReason(item)}>{item}</button>)}</div></div></div></div>;
 }
 
-const extraStations = [
-  { image: "lilli-1958.jpg", alt: "Lilli iz leta 1958", tone: "purple" as const, eyebrow: "04 · PREDHODNICA", title: <>PRED BARBIE<br /><em>JE BILA LILLI</em></>, paragraphs: ["Preden je nastala Barbie, je v Nemčiji obstajala lutka Lilli. Ruth Handler jo je videla na potovanju in opazila, da ni podobna dojenčici." , "Lilli ni bila kopija Barbie, je pa Ruth pomagala razmišljati o novi vrsti lutke. Ideje pogosto nastanejo tako, da nekaj opazujemo in si predstavljamo drugačno možnost."], fact: "Barbie je dobila svojo podobo, ime in zgodbo. Postala je samostojna ameriška igrača." },
-  { image: "barbie-1959.jpg", alt: "Barbie na začetku leta 1959", tone: "pink" as const, eyebrow: "05 · 1959", title: <>BARBIE<br /><em>PRIDE NA SVET</em></>, paragraphs: ["Barbie se je prvič pojavila 9. marca 1959 na sejmu igrač v New Yorku. Oblečena je bila v črno-bele črtaste kopalke.", "Ni bila dojenčica. Bila je lutka odraslega videza, zato so lahko otroci z njo pripovedovali zgodbe o modi, delu, prijateljstvu in potovanjih."], fact: "Prva Barbie je stala tri dolarje. Njena podoba je danes prepoznavna po vsem svetu." },
-  { image: "barbie-ken.jpg", alt: "Barbie in Ken iz leta 1959", tone: "teal" as const, eyebrow: "07 · KEN", title: <>PRIDE TUDI<br /><em>KEN</em></>, paragraphs: ["Leta 1961 se je Barbiejini zgodbi pridružil Ken. Ime je dobil po Kenneth, sinu Ruth in Elliota Handlerja.", "Ken ni bil samo Barbiejin fant. Tudi on je dobil različne obleke, poklice in pustolovščine. Pri igri lahko vsak lik postane to, kar si izmisliš."], fact: "Ken je bil prvič oblečen v rdeče kopalke. Kasneje je dobil veliko različnih slogov." },
-  { image: "barbie-first-dreamhouse.jpg", alt: "Prva Barbiejina Dreamhouse iz leta 1962", tone: "yellow" as const, eyebrow: "08 · DOM", title: <>BARBIE DOBI<br /><em>SVOJ DOM</em></>, paragraphs: ["Leta 1962 je Barbie dobila svojo prvo Dreamhouse. To ni bila hiša za dojenčka, ampak prostor za samostojno življenje, počitek in igro.", "V hiši so otroci lahko uredili dnevno sobo, povabili prijatelje in si izmislili čisto svoj vsakdan."], fact: "Prva Dreamhouse je bila iz kartona in ni imela dvigala. Imela pa je nekaj še pomembnejšega: prostor za domišljijo." },
-  { image: "barbie-first-car.jpg", alt: "Prvi avtomobil za Barbie iz leta 1962", tone: "purple" as const, eyebrow: "09 · POTOVANJE", title: <>NA POTI<br /><em>Z BARBIE</em></>, paragraphs: ["Ko imaš dom, potrebuješ tudi način, kako se odpraviš na pot. Barbie je leta 1962 dobila svoj prvi športni avtomobil.", "Avto je odprl nove zgodbe: izlet, obisk prijateljice, vožnjo na plažo ali veliko potovanje."], fact: "Barbiejin svet se je širil skupaj z dodatki. Vsak nov predmet je prinesel novo možnost za igro." },
-  { image: "barbie-first-camper.jpg", alt: "Prvi Barbiejin avtodom iz leta 1971", tone: "teal" as const, eyebrow: "10 · PUSTOLOVŠČINA", title: <>SPAKIRAJ IN<br /><em>ODPELJI SE</em></>, paragraphs: ["Leta 1971 je Barbie dobila avtodom. Z njim se je lahko odpravila v naravo, na kampiranje in na izlet s prijatelji.", "Pustolovščina ni vedno daleč. Včasih se začne že takrat, ko pripraviš torbo, izbereš cilj in rečeš: gremo!"], fact: "Avtodom je združil prevoz, hiško in prostor za igro v eni igrači." },
-  { image: "barbie-medicinska-sestra.jpg", alt: "Barbie v različnih poklicih", tone: "pink" as const, eyebrow: "11 · POKLICI", title: <>LAHKO SANJAŠ<br /><em>O VELIKIH STVAREH</em></>, paragraphs: ["Barbie je skozi leta postala zdravnica, pilotka, znanstvenica, gasilka, računalniška inženirka, predsednica in še marsikaj.", "Poklicna Barbie ne pove, kaj moraš postati. Pokaže ti, da lahko raziskuješ, se učiš in poskusiš nekaj novega."], fact: "Prva Barbie astronavtka je poletela v vesolje že leta 1965, še pred prvim človekom na Luni." },
-  { image: "barbie-computer.jpg", alt: "Barbie kot računalniška inženirka", tone: "purple" as const, eyebrow: "12 · VESOLJE IN ZNANOST", title: <>BARBIE GLEDA<br /><em>PROTI ZVEZDAM</em></>, paragraphs: ["Barbie je bila astronavtka, pilotka, računalniška inženirka in raziskovalka. S tem je otrokom pokazala, da so znanost, tehnologija in odkrivanje tudi za dekleta.", "Pri znanosti ni najpomembnejše, da vse veš takoj. Pomembno je, da sprašuješ, opazuješ in poskusiš znova."], fact: "Velike raziskovalke so se pogosto začele z majhnim vprašanjem: kako to deluje?" },
-  { image: "barbie-razlicne.jpg", alt: "Barbie z različnimi oblikami telesa", tone: "teal" as const, eyebrow: "13 · VSAKDO", title: <>BARBIE<br /><em>ZA VSAKOGAR</em></>, paragraphs: ["Leta 2016 je Barbie dobila različne oblike telesa, višine in postave. To je pomemben korak, saj ljudje niso vsi videti enako.", "Igrače lahko pomagajo otrokom opaziti, da je raznolikost nekaj običajnega in lepega. Vsakdo si zasluži, da se prepozna v zgodbi."], fact: "Različnost pomeni, da lahko v skupini vsak prinese nekaj svojega." },
-  { image: "barbie-look.jpg", alt: "Različni modni videzi Barbie", tone: "yellow" as const, eyebrow: "14 · MODA", title: <>OBLAČILA SE<br /><em>SPREMINJAJO</em></>, paragraphs: ["Barbiejina oblačila so se spreminjala skupaj z modo. Včasih je nosila elegantno obleko, drugič športna oblačila ali uniformo za delo.", "Moda je način, kako pokažemo razpoloženje, čas in vlogo. Pri igri pa lahko obleko zamenjaš v trenutku."], fact: "Najboljša modna izbira je tista, ki pomaga pripovedovati tvojo zgodbo." },
-  { image: "barbie-dolls-of-the-world.jpg", alt: "Barbie iz zbirke Dolls of the World", tone: "pink" as const, eyebrow: "15 · SVET", title: <>BARBIE<br /><em>OKOLI SVETA</em></>, paragraphs: ["Barbie je dobila oblačila in podobe, ki so se navdihovale pri različnih krajih in kulturah sveta.", "Pri tem je pomembno biti radoveden in spoštljiv: kultura ni kostum. Najprej poslušamo ljudi, spoznamo zgodbo in se učimo."], fact: "Svet je velik in zanimiv. Nobena lutka ne more predstaviti vseh ljudi, lahko pa nas spodbudi k učenju." },
-  { image: "barbie-gabby.jpg", alt: "Barbie kot junakinja nove zgodbe", tone: "purple" as const, eyebrow: "16 · NA ZASLONU", title: <>BARBIE POSTANE<br /><em>JUNAKINJA</em></>, paragraphs: ["Barbie se je preselila tudi na televizijo, v risanke, knjige in filme. Tam ni bila samo lutka, ampak junakinja, ki rešuje probleme in pomaga prijateljem.", "Na zaslonu lahko zgodba traja dlje. Isti lik se lahko znajde v glasbi, športu, čarobnem svetu ali vsakdanji šoli."], fact: "Ko zgodbo pripovedujemo na več načinov, jo lahko vsak otrok doživi po svoje." },
-  { image: "barbie-amelia.jpg", alt: "Barbie kot navdihujoče ženske", tone: "teal" as const, eyebrow: "17 · DANES", title: <>KAJ POMENI<br /><em>BARBIE DANES?</em></>, paragraphs: ["Danes Barbie predstavlja veliko različnih poti. Lahko je športnica, umetnica, znanstvenica, mama, prijateljica ali nekaj čisto novega.", "Najbolj pomembno vprašanje ni, katera Barbie je najboljša. Vprašanje je: katera zgodba tebe najbolj zanima?"], fact: "Barbiejina zgodba se še vedno spreminja, ker jo vsaka generacija bere na svoj način." },
-];
-
-function HistoryStation({ go, station, index }: { go: (n: number) => void; station: typeof extraStations[number]; index: number }) {
-  return (
-    <div className="page-grid story-page split-page history-station">
-      <div className="story-art-card art-card-coral"><img className="station-photo" src={supabasePhoto(station.image)} alt={station.alt} /><div className="image-caption"><span>{station.eyebrow.split("·")[1]?.trim() || "ZGODBA"}</span><strong>{station.image.replace(/\.[^.]+$/, "").replace(/-/g, " ").toUpperCase()}</strong></div><div className="stamp">ZGODBA<br />+<br />IDEJA</div></div>
-      <div className="story-copy"><SectionTag tone={station.tone}>{station.eyebrow}</SectionTag><h2>{station.title}</h2>{station.paragraphs.map((text) => <p key={text}>{text}</p>)}<DidYouKnow>{station.fact}</DidYouKnow><div className="question-prompt"><CircleHelp size={21} /><span>{index === 17 ? "KAJ BI TI SPREMENILA?" : "KAJ SI BOŠ ZAPOMNILA?"}</span></div><div className="page-actions"><BackButton onClick={() => go(index - 1)} /><NextButton onClick={() => go(index + 1)} /></div></div>
-    </div>
-  );
+const interests = ["ODKRIVA", "POMAGA", "USTVARJA", "NAČRTUJE", "RAZISKUJE NARAVO", "UČI SE NOVIH STVARI"];
+const careers = ["ASTRONAVTKA", "ZDRAVNICA", "RAZISKOVALKA", "UMETNICA", "FOTOGRAFINJA", "PILOTKA", "VETERINARKA", "OBLIKOVALKA", "NEKAJ ČISTO SVOJEGA"];
+const places = ["MESTO", "MORJE", "GOZD", "VESOLJE", "DELAVNICA", "ČAROBNI SVET"];
+const objects = ["DALJNOGLED", "FOTOAPARAT", "ZEMLJEVID", "ČOPIČ", "STETOSKOP", "VESOLJSKA ČELADA", "KNJIGA"];
+const messages = ["VSAKDO LAHKO POSKUSI.", "RAZLIČNOSTI NAS BOGATIJO.", "VELIKE IDEJE POTREBUJEJO ČAS.", "PRIJATELJI SI POMAGAJO.", "ZGODBO LAHKO USTVARIŠ TUDI TI."];
+function CreatorPage({ go }: { go: (n: number) => void }) {
+  const [name, setName] = useState(""); const [interest, setInterest] = useState(interests[0]); const [career, setCareer] = useState(careers[0]); const [place, setPlace] = useState(places[0]); const [object, setObject] = useState(objects[0]); const [message, setMessage] = useState(messages[0]); const [custom, setCustom] = useState(false);
+  const displayName = name.trim() || "MOJA JUNAKINJA";
+  return <div className="creator-page page-grid"><div className="creator-form"><SectionTag tone="purple">20 · USTVARJANJE</SectionTag><h2>ZDAJ SI <em>NA VRSTI TI</em></h2><p>Ustvari junakinjo po svoji zamisli. Izbire se sproti pokažejo na kartici.</p><div className="form-scroll"><label>IME JUNAKINJE<input value={name} onChange={(e) => setName(e.target.value.toUpperCase())} placeholder="NAPIŠI IME" maxLength={20} /></label><Choice label="KAJ JO ZANIMA?" items={interests} value={interest} onChange={setInterest} multi /><Choice label="POKLIC, HOBI ALI SANJE" items={careers} value={career} onChange={(v) => { setCareer(v); setCustom(v === "NEKAJ ČISTO SVOJEGA"); }} /><Choice label="KJE SE ZAČNE PUSTOLOVŠČINA?" items={places} value={place} onChange={setPlace} /><Choice label="KAJ VZAME S SEBOJ?" items={objects} value={object} onChange={setObject} /><Choice label="NJENO SPOROČILO" items={messages} value={message} onChange={setMessage} /></div><div className="page-actions"><BackButton onClick={() => go(18)} /><button type="button" className="secondary-button" onClick={() => { setName(""); setInterest(interests[0]); setCareer(careers[0]); setPlace(places[0]); setObject(objects[0]); setMessage(messages[0]); setCustom(false); }}><WandSparkles size={17} /> NOVA</button></div></div><div className="character-preview"><div className="preview-top"><span>MOJA JUNAKINJA</span><Sparkles size={19} /></div><div className={`character-illustration place-${place.toLowerCase().replaceAll(" ", "-")}`}><div className="character-star"><Star size={30} fill="currentColor" /></div><div className="character-silhouette"><div className="char-head" /><div className="char-body" /><div className="char-leg left" /><div className="char-leg right" /></div><span className="object-badge">{object}</span></div><h3>{displayName}</h3><div className="preview-line"><span>RADA</span><strong>{interest}</strong></div><div className="preview-line"><span>POKLIC / HOBI</span><strong>{custom ? "TVOJA IDEJA" : career}</strong></div><div className="preview-line"><span>KRAJ</span><strong>{place}</strong></div><blockquote>»{message}«</blockquote><p className="auto-story"><b>{displayName}</b> je {custom ? "ustvarjalka svoje poti" : career.toLowerCase()}. Rada {interest.toLowerCase()} in svojo zgodbo začne v kraju <b>{place.toLowerCase()}</b>. S seboj vzame <b>{object.toLowerCase()}</b>.</p><div className="preview-actions"><button type="button" className="primary-button" onClick={() => alert("KARTICA JE PRIPRAVLJENA! ZDAJ JO LAHKO POKAŽEŠ ODRASLI OSEBI.")}>KONČAJ KARTICO <Check size={18} /></button><button type="button" className="text-button" onClick={() => go(0)}><HomeIcon size={17} /> NA ZAČETEK</button></div></div></div>;
 }
+function Choice({ label, items, value, onChange, multi = false }: { label: string; items: string[]; value: string; onChange: (v: string) => void; multi?: boolean }) { return <div className="choice-group"><div className="choice-label">{label}</div><div className="choice-options">{items.map((item) => <button type="button" key={item} className={`choice-option ${value === item ? "is-selected" : ""}`} onClick={() => onChange(item)}>{value === item && <Check size={14} />}{item}</button>)}</div>{multi && <small>IZBERI ENO ZA ZAČETEK — POZNEJE LAHKO DODAŠ ŠE VEČ.</small>}</div>; }
 
-function FinalPage({ go }: { go: (n: number) => void }) {
-  return <div className="page-grid story-page split-page"><div className="story-art-card art-card-coral"><img src={ASSETS.hero} alt="Barbiejina zgodba in ustvarjalni zvezek" /><div className="image-caption"><span>KONEC PRVEGA DELA</span><strong>ZDAJ SI NA VRSTI TI</strong></div></div><div className="story-copy"><SectionTag tone="yellow">20 · KONEC</SectionTag><h2>TVOJA ZGODBA<br /><em>SE ŠELE ZAČENJA</em></h2><p>Zdaj poznaš nekaj pomembnih trenutkov iz Barbijine zgodovine. Toda najbolj zanimiv del se začne takrat, ko si izmisliš svojo junakinjo.</p><p>Nariši jo, napiši njeno ime in ji podari nalogo, ki bi jo rada preizkusila. Morda bo nekoč kdo pripovedoval prav tvojo zgodbo.</p><DidYouKnow>Ni ene same pravilne prihodnosti. Obstaja veliko poti — in ti lahko izbereš svojo.</DidYouKnow><div className="page-actions"><BackButton onClick={() => go(18)} /><button className="secondary-button" type="button" onClick={() => go(0)}><HomeIcon size={17} /> ZNOVA OD ZAČETKA</button></div></div></div>;
-}
-
-function LaunchPage({ go }: { go: (n: number) => void }) {
-  return (
-    <div className="page-grid story-page launch-page">
-      <div className="launch-copy">
-        <SectionTag tone="purple">04 · 1959</SectionTag>
-        <h2>BARBIE<br /><em>PRIDE NA SVET</em></h2>
-        <div className="big-year">1959</div>
-        <p>Barbie se je prvič pojavila 9. marca <strong>1959</strong> na sejmu igrač v New Yorku. Oblečena je bila v črno-bele črtaste kopalke.</p>
-        <p>Ni bila dojenčica. Bila je lutka odraslega videza, zato so lahko otroci z njo pripovedovali zgodbe o modi, delu, prijateljstvu in potovanjih.</p>
-        <DidYouKnow>Prva Barbie je stala tri dolarje. Danes je njena podoba prepoznavna po vsem svetu.</DidYouKnow>
-        <div className="page-actions"><BackButton onClick={() => go(3)} /><NextButton onClick={() => go(5)} /></div>
-      </div>
-      <div className="launch-art portrait-layout"><img src={supabasePhoto("barbie-1959.jpg")} alt="Barbie iz leta 1959 v črno-belih kopalkah" /><div className="launch-ribbon">PRVO<br />POGLAVJE</div></div>
-    </div>
-  );
-}
-
-function FirstBarbiePage({ go }: { go: (n: number) => void }) {
-  return (
-    <div className="page-grid story-page first-page">
-      <div className="first-art">
-        <div className="portrait-frame"><img className="first-barbie-photo" src={supabasePhoto("barbie-1959-original.jpg")} alt="Originalna Barbie iz leta 1959" /><div className="frame-label">ORIGINALNI VIDEZ · 1959</div></div>
-        <div className="accessory-card"><span className="accessory-sun">◌</span><span className="accessory-shoe">⌁</span><span className="accessory-bag">▱</span><div>SONČNA OČALA · ČEVLJI · TORBICA</div></div>
-      </div>
-      <div className="story-copy first-copy">
-        <SectionTag tone="teal">05 · PRVA BARBIE</SectionTag>
-        <h2>OBLAČILA<br /><em>POVEDO ZGODBO</em></h2>
-        <p>Prva Barbie je imela čop, rdeče ustnice in črno-bele črtaste kopalke. Njen videz je sledil modi poznih petdesetih let.</p>
-        <p>V škatli so bili tudi čevlji, uhani in sončna očala. Dodatki niso bili samo okras: pomagali so ustvariti novo vlogo in novo zgodbo.</p>
-        <DidYouKnow>Barbiejina oblačila so bila majhna, vendar so imela velik učinek: otroci so lahko z njimi spreminjali svet igre.</DidYouKnow>
-        <div className="question-prompt"><CircleHelp size={21} /><span>KATERI DODATEK BI DODALA?</span></div>
-        <div className="page-actions"><BackButton onClick={() => go(4)} /><NextButton onClick={() => go(6)} /></div>
-      </div>
-    </div>
-  );
-}
-
-function CareersPage({ go }: { go: (n: number) => void }) {
-  const careers = [
-    { name: "ZDRAVNICA", icon: Stethoscope, color: "pink" },
-    { name: "UMETNICA", icon: Palette, color: "yellow" },
-    { name: "ASTRONAVTKA", icon: Rocket, color: "purple" },
-    { name: "FOTOGRAFINJA", icon: Camera, color: "teal" },
-    { name: "RAZISKOVALKA", icon: Glasses, color: "orange" },
-    { name: "PISATELJICA", icon: BookOpen, color: "blue" },
-  ];
-  return (
-    <div className="page-grid careers-page">
-      <div className="careers-intro">
-        <SectionTag tone="pink">06 · POKLICI</SectionTag>
-        <h2>LAHKO SANJAŠ<br /><em>O VELIKIH STVAREH</em></h2>
-        <p>Barbie je skozi leta postala zdravnica, pilotka, znanstvenica, gasilka, računalniška inženirka, predsednica in še marsikaj.</p>
-        <div className="quote-card">»NI TI TREBA IZBRATI SAMO ENE SANJSKE SLUŽBE.«</div>
-        <div className="story-photo-strip"><img src={supabasePhoto("barbie-astronaut.jpg")} alt="Barbie kot astronavtka, kirurginja in rock zvezda" /><span>RAZLIČNI POKLICI · RAZLIČNE ZGODBE</span></div>
-        <div className="page-actions"><BackButton onClick={() => go(9)} /><NextButton onClick={() => go(11)} /></div>
-      </div>
-      <div className="career-grid">
-        {careers.map(({ name, icon: Icon, color }) => <button className={`career-card career-${color}`} key={name} type="button"><Icon size={28} /><strong>{name}</strong><span>IGRAJ SE Z IDEJO <ArrowRight size={15} /></span></button>)}
-      </div>
-    </div>
-  );
-}
-
-function DecadesPage({ go }: { go: (n: number) => void }) {
-  const decades = ["1950-TA", "1960-TA", "1970-TA", "1980-TA", "1990-TA", "DANES"];
-  return (
-    <div className="page-grid timeline-page">
-      <div className="timeline-heading"><SectionTag tone="yellow">07 · DESETLETJA</SectionTag><h2>BARBIE<br /><em>SKOZI ČAS</em></h2><p>V petdesetih je bila modna lutka. V šestdesetih je dobila nove poklice in dom. V sedemdesetih je raziskovala svet, pozneje pa tudi tehnologijo, šport in vesolje.</p><p>Vsako desetletje je prineslo nove barve, oblačila in ideje.</p></div>
-      <div className="timeline-visual"><img src={supabasePhoto("barbie-1960s.jpg")} alt="Barbiejini poklici iz šestdesetih let" /><div className="timeline-years">{decades.map((d, i) => <span key={d} className={i === 0 ? "active" : ""}>{d}</span>)}</div></div>
-      <div className="timeline-bottom"><div className="mini-timeline-fact"><Clock3 size={20} /><span><strong>ALI VEŠ?</strong> Ko pogledamo stare igrače, lahko opazimo, kako so se spreminjali moda, tehnologija in predstave o tem, kaj lahko počnejo dekleta.</span></div><div className="page-actions"><BackButton onClick={() => go(13)} /><NextButton onClick={() => go(15)} /></div></div>
-    </div>
-  );
-}
-
-function GalleryPage({ go, openImage, items, loading }: { go: (n: number) => void; openImage: (i: number) => void; items: GalleryItem[]; loading: boolean }) {
-  return (
-    <div className="page-grid gallery-page">
-      <div className="gallery-heading"><SectionTag tone="teal">08 · GALERIJA</SectionTag><h2>POGLEJ.<br /><em>POVEČAJ. RAZIŠČI.</em></h2><p>Fotografije so razporejene po zgodbi. Tapni na sliko, jo povečaj in preberi, kaj prikazuje.</p></div>
-      <div className="gallery-grid">{items.map((item, i) => <button className="gallery-card" key={item.filename || item.title} type="button" onClick={() => openImage(i)}><img src={item.src} alt={item.title} /><span className="gallery-expand"><Expand size={17} /></span><div className="gallery-meta"><strong>{item.title}</strong><span>{item.text}</span></div></button>)}</div>
-      <div className="gallery-footer"><div className="mini-note"><ImageIcon size={16} /> {loading ? "NALAGAM SLIKE IZ SUPABASE ..." : `${items.length} FOTOGRAFIJ · VSAKA SLIKA IMA SVOJO ZGODBO`}</div><div className="page-actions"><BackButton onClick={() => go(17)} /><NextButton onClick={() => go(19)} /></div></div>
-    </div>
-  );
-}
-
-function QuizPage({ go }: { go: (n: number) => void }) {
-  const [questionIndex, setQuestionIndex] = useState(0);
-  const [selected, setSelected] = useState<number | null>(null);
-  const [created, setCreated] = useState(false);
-  const current = quizQuestions[questionIndex];
-  const answerCorrect = selected === current.correct;
-
-  const choose = (i: number) => setSelected(i);
-  const nextQuestion = () => {
-    setSelected(null);
-    setQuestionIndex((i) => (i + 1) % quizQuestions.length);
-  };
-  return (
-    <div className="page-grid quiz-page">
-      <div className="quiz-heading"><SectionTag tone="purple">20 · KVIZ IN USTVARJANJE</SectionTag><h2>PREVERI<br /><em>SVOJE ZNANJE</em></h2><p>Tri kratka vprašanja za konec. Če se zmotiš, nič hudega: zgodbo lahko vedno prebereš še enkrat.</p></div>
-      <div className="quiz-layout">
-        <div className="quiz-card"><div className="quiz-topline"><span>VPRAŠANJE {questionIndex + 1} / {quizQuestions.length}</span><div className="quiz-progress"><i style={{ width: `${((questionIndex + 1) / quizQuestions.length) * 100}%` }} /></div></div><h3>{current.question}</h3><div className="answers">{current.answers.map((answer, i) => <button key={answer} className={`answer ${selected !== null && i === selected ? (answerCorrect ? "answer-correct" : "answer-wrong") : ""}`} type="button" onClick={() => choose(i)}><span className="answer-letter">{String.fromCharCode(65 + i)}</span>{answer}{selected !== null && i === selected && answerCorrect && <Check size={20} />}</button>)}</div>{selected !== null && <div className={`quiz-feedback ${answerCorrect ? "feedback-good" : "feedback-soft"}`}>{answerCorrect ? "ODLIČNO! TO SI SI DOBRO ZAPOMNILA." : "SKORAJ! POSKUSI ŠE ENKRAT."}</div>}{selected !== null && answerCorrect && <button className="next-question" type="button" onClick={nextQuestion}>NASLEDNJE VPRAŠANJE <ArrowRight size={17} /></button>}</div>
-        <div className="create-card"><div className="create-sparkle"><Sparkles size={22} /></div><span className="create-eyebrow">USTVARJALNA NALOGA</span><h3>USTVARI<br /><em>SVOJO BARBIE</em></h3><p>Nariši junakinjo, ki je podobna tebi. Izberi njeno ime, poklic, najljubši kraj in posebno moč.</p><div className="create-fields"><span>IME JUNAKINJE</span><span>POKLIC ALI HOBI</span><span>POSEBNA MOČ</span></div><button className="outline-light" type="button" onClick={() => setCreated(!created)}>{created ? "TVOJA IDEJA JE SHRANJENA!" : "ODPRI RISALNO KARTICO"} <Pencil size={17} /></button></div>
-      </div>
-      <div className="quiz-footer"><div className="page-actions"><BackButton onClick={() => go(18)} /><button className="secondary-button" type="button" onClick={() => go(0)}><HomeIcon size={17} /> NA ZAČETEK</button></div><span className="end-note"><Sun size={16} /> TVOJA DOMIŠLJIJA JE TVOJA SUPERMOČ.</span></div>
-    </div>
-  );
-}
-
-export default function Home() {
-  const [page, setPage] = useState(0);
-  const [caps, setCaps] = useState(() => localStorage.getItem("barbie-caps") === "true");
-  const [galleryIndex, setGalleryIndex] = useState<number | null>(null);
-  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>(fallbackGallery);
-  const [galleryLoading, setGalleryLoading] = useState(true);
-  useEffect(() => { localStorage.setItem("barbie-caps", String(caps)); }, [caps]);
-  useEffect(() => { window.scrollTo({ top: 0, behavior: "smooth" }); }, [page]);
-  useEffect(() => {
-    let active = true;
-    loadSupabaseGallery().then((items) => { if (active) setGalleryItems(items); }).catch(() => undefined).finally(() => { if (active) setGalleryLoading(false); });
-    return () => { active = false; };
-  }, []);
-
-  const go = (nextPage: number) => setPage(Math.max(0, Math.min(pages.length - 1, nextPage)));
+function Home() {
+  const [page, setPage] = useState(0); const [caps, setCaps] = useState(true); const go = (next: number) => setPage(Math.max(0, Math.min(19, next)));
   const current = pages[page];
-  const pageContent = useMemo(() => {
-    if (page === 0) return <HomePage go={go} />;
-    if (page === 1) return <RuthPage go={go} />;
-    if (page === 2) return <IdeaPage go={go} />;
-    if (page === 3) return <HistoryStation go={go} station={extraStations[0]} index={3} />;
-    if (page === 4) return <LaunchPage go={go} />;
-    if (page === 5) return <FirstBarbiePage go={go} />;
-    if (page === 6) return <HistoryStation go={go} station={extraStations[1]} index={6} />;
-    if (page === 7) return <HistoryStation go={go} station={extraStations[2]} index={7} />;
-    if (page === 8) return <HistoryStation go={go} station={extraStations[3]} index={8} />;
-    if (page === 9) return <HistoryStation go={go} station={extraStations[4]} index={9} />;
-    if (page === 10) return <CareersPage go={go} />;
-    if (page === 11) return <HistoryStation go={go} station={extraStations[6]} index={11} />;
-    if (page === 12) return <HistoryStation go={go} station={extraStations[7]} index={12} />;
-    if (page === 13) return <HistoryStation go={go} station={extraStations[8]} index={13} />;
-    if (page === 14) return <DecadesPage go={go} />;
-    if (page === 15) return <HistoryStation go={go} station={extraStations[9]} index={15} />;
-    if (page === 16) return <HistoryStation go={go} station={extraStations[10]} index={16} />;
-    if (page === 17) return <HistoryStation go={go} station={extraStations[11]} index={17} />;
-    if (page === 18) return <GalleryPage go={go} openImage={setGalleryIndex} items={galleryItems} loading={galleryLoading} />;
-    if (page === 19) return <QuizPage go={go} />;
-    return <FinalPage go={go} />;
-  }, [page, galleryItems, galleryLoading]);
-
-  return (
-    <div className={`app-shell ${caps ? "caps-mode" : ""}`}>
-      <header className="site-header">
-        <button className="brand" type="button" onClick={() => go(0)} aria-label="Domov"><span className="brand-mark"><Sparkles size={15} fill="currentColor" /></span><span>BARBIJINA<br /><b>ZGODBA</b></span></button>
-        <div className="header-center"><span className="header-kicker">NEODVISEN DRUŽINSKI PROJEKT</span><span className="header-divider" /><span className="header-page">{current.number} / 20</span></div>
-        <div className="header-actions"><button className={`caps-toggle ${caps ? "is-on" : ""}`} type="button" onClick={() => setCaps(!caps)}><span className="toggle-icon">A/a</span><span>{caps ? "OBIČAJNE ČRKE" : "VELIKE ČRKE"}</span></button><button className="home-button" type="button" onClick={() => go(0)} aria-label="Domov"><HomeIcon size={18} /></button></div>
-      </header>
-      <main className="site-main"><div className="page-kicker"><span>{current.label}</span><span className="kicker-line" /><span>{current.kicker}</span></div>{pageContent}</main>
-      <footer className="site-footer"><div className="footer-progress">{pages.map((item, i) => <button key={item.number} type="button" className={`progress-dot ${i === page ? "active" : ""} ${i < page ? "visited" : ""}`} onClick={() => go(i)} aria-label={`Pojdi na stran ${i + 1}`}><span>{item.number}</span></button>)}</div><div className="footer-credit">BARBIJINA ZGODBA <span>·</span> SLOVENIJA <span>·</span> 2026</div></footer>
-      {galleryIndex !== null && galleryItems[galleryIndex] && <div className="lightbox" role="dialog" aria-modal="true"><button className="lightbox-close" type="button" onClick={() => setGalleryIndex(null)} aria-label="Zapri"><X size={24} /></button><button className="lightbox-arrow left" type="button" onClick={() => setGalleryIndex((galleryIndex + galleryItems.length - 1) % galleryItems.length)} aria-label="Prejšnja slika"><ChevronLeft size={28} /></button><div className="lightbox-content"><img src={galleryItems[galleryIndex].src} alt={galleryItems[galleryIndex].title} /><div><span>{galleryItems[galleryIndex].title}</span><p>{galleryItems[galleryIndex].text}</p></div></div><button className="lightbox-arrow right" type="button" onClick={() => setGalleryIndex((galleryIndex + 1) % galleryItems.length)} aria-label="Naslednja slika"><ChevronRight size={28} /></button></div>}
-    </div>
-  );
+  return <div className={`app-shell ${caps ? "caps-on" : ""}`}><header className="site-header"><button className="brand" type="button" onClick={() => go(0)}><span className="brand-mark">B</span><span>BARBIJINA<br /><b>ZGODBA</b></span></button><div className="header-center"><span>{current.label}</span><i /><b>{current.number} / 20</b></div><div className="header-actions"><button className={`caps-toggle ${caps ? "is-on" : ""}`} type="button" onClick={() => setCaps(!caps)}><span className="toggle-icon">A</span>{caps ? "VELIKE ČRKE" : "OBIČAJNE ČRKE"}</button><button className="home-button" type="button" onClick={() => go(0)} aria-label="Na začetek"><HomeIcon size={18} /></button></div></header><main className="site-main">{page === 0 && <HomePage go={go} />}{page >= 1 && page <= 17 && <StoryPage index={page} go={go} />}{page === 18 && <SummaryPage go={go} />}{page === 19 && <CreatorPage go={go} />}</main><footer className="site-footer"><button type="button" onClick={() => go(page - 1)} disabled={page === 0}><ChevronLeft size={18} /> PREJŠNJA</button><div className="progress-track"><span style={{ width: `${((page + 1) / 20) * 100}%` }} /></div><button type="button" onClick={() => go(page + 1)} disabled={page === 19}>NASLEDNJA <ChevronRight size={18} /></button></footer></div>;
 }
 
-export { pages };
-
-const unused = { Clock3 };
-void unused;
+export default Home;
